@@ -1079,4 +1079,9 @@ dom1Scale = 1e-7
     block = 1
     potential = potential
   []
+  [field_solver]
+    type = FieldSolverMaterial
+    potential = potential
+    block = '0 1'
+  []
 []
