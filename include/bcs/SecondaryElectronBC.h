@@ -44,6 +44,8 @@ protected:
 
   const ADMaterialProperty<RealVectorValue> & _electric_field;
 
+  const ADMaterialProperty<RealVectorValue> & _electric_field;
+
   Real _a;
   Real _b;
   ADReal _v_thermal;
