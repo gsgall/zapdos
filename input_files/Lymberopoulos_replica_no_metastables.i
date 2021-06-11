@@ -15,13 +15,13 @@ dom0Scale = 25.4e-3
         type = SideSetsFromNormalsGenerator
         normals = '-1 0 0'
         new_boundary = 'left'
-        input = file
+        input = file # file where the mesh is coming from
     [../]
     [./right]
         type = SideSetsFromNormalsGenerator
         normals = '1 0 0'
         new_boundary = 'right'
-        input = left
+        input = left # uses left because it is building off of the left point
     [../]
 []
 
@@ -33,12 +33,10 @@ dom0Scale = 25.4e-3
     [./Plasma]
         electrons = em
         charged_particle = Ar+
-        #Neutrals = Ar*
         potential = potential
         Is_potential_unique = true
         mean_energy = mean_en
         position_units = ${dom0Scale}
-        Additional_Outputs = 'ElectronTemperature'
     [../]
 []
 
@@ -58,12 +56,6 @@ dom0Scale = 25.4e-3
         block = 0
         reactions = 'Ar + em -> Ar* + em          : EEDF [-11.56] (ar_excitation.txt)
                      Ar + em -> Ar+ + em + em     : EEDF [-15.7] (ar_ionization.txt)'
-                     #Ar* + em -> Ar+ + em + em    : EEDF [-4.14] (ar_excited_ionization.txt)
-                     #Ar* + em -> Ar + em          : EEDF [11.56] (ar_deexcitation.txt)
-                     #Ar* + em -> Ar_r + em        : 1.2044e11
-                     #Ar* + Ar* -> Ar+ + Ar + em   : 373372804
-                     #Ar* + Ar -> Ar + Ar          : 1.8066e03
-                     #Ar* + Ar + Ar -> Ar_2 + Ar   : 3.9893e04
     [../]
 []
 
@@ -157,20 +149,6 @@ dom0Scale = 25.4e-3
         variable = Ar+
         boundary = 'right'
     [../]
-
-    #[./Ar*_left]
-    #    type = LogDensityDirichletBC
-    #    value = 100
-    #    variable = Ar*
-    #    boundary = 'left'
-    #[../]
-#
-    #[./Ar*_right]
-    #    type = LogDensityDirichletBC
-    #    value = 100
-    #    variable = Ar*
-    #    boundary = 'right'
-    #[../]
 []
 
 
@@ -180,12 +158,6 @@ dom0Scale = 25.4e-3
         variable = em
         function = density_ic_function
     [../]
-
-    #[./Ar*_ic]
-    #    type = FunctionIC
-    #    variable = Ar*
-    #    function = density_ic_function
-    #[../]
 
     [./Ar+_ic]
         type = FunctionIC
@@ -219,7 +191,7 @@ dom0Scale = 25.4e-3
 
     [./potential_ic_function]
         type = ParsedFunction
-        value = '0.100 * (1 - x)'
+        value = '0.100 * (25.4e-3 - x)'
     [../]
 
     [./potential_bc_function]
@@ -237,7 +209,6 @@ dom0Scale = 25.4e-3
 [Materials]
     [./GasBasics]
         type = GasElectronMoments
-        # will be used for water as well
         interp_trans_coeffs = false
         interp_elastic_coeff = false
         ramp_trans_coeffs = false
@@ -252,8 +223,11 @@ dom0Scale = 25.4e-3
         position_units = ${dom0Scale}
     [../]
 
-    [./gas_species_0]
-        type = HeavySpeciesMaterial
+    [./Argon_Ions]
+        # charged particles need mobility and diffusivity
+        # mobility accounts for affects from electric fields
+        # diffusivity accounts for the motion of the particles
+        type = ADHeavySpecies
         heavy_species_name = Ar+
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 1.0
@@ -261,23 +235,15 @@ dom0Scale = 25.4e-3
         diffusivity = 6.428571e-3
     [../]
 
-    #[./gas_species_1]
-    #    type = HeavySpeciesMaterial
-    #    heavy_species_name = Ar*
-    #    heavy_species_mass = 6.64e-26
-    #    heavy_species_charge = 0.0
-    #    diffusivity = 7.515528e-3
-    #[../]
-
-    [./gas_species_2]
-        type = HeavySpeciesMaterial
+    [./Argon_Neutrals]
+        # neutral species do not mobility or diffusivity becuase we are not keeping track of them
+        type = ADHeavySpecies
         heavy_species_name = Ar
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 0.0
     [../]
 []
 
-# It is a good idea to have some Preconditioning to help with the computational resources needed
 [Preconditioning]
     [./smp]
       type = SMP
@@ -285,25 +251,37 @@ dom0Scale = 25.4e-3
     [../]
 []
 
-[Executioner]
-  type = Transient
-  end_time = 7.3746e-05
-  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
-  solve_type = NEWTON
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
-  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
-  nl_rel_tol = 1e-08
-  dtmin = 1e-14
-  l_max_its = 20
 
-  ## These are needed for the time sclaes of plasmas
-  scheme = bdf2
-  dt = 1e-9
-  automatic_scaling = true
-  compute_scaling_once = false
+#New postprocessor that calculates the inverse of the plasma frequency
+[Postprocessors]
+    [./InversePlasmaFreq]
+        type = PlasmaFrequencyInverse
+        variable = em
+        use_moles = true
+        execute_on = 'INITIAL TIMESTEP_BEGIN'
+    [../]
+[]
+
+[Executioner]
+    type = Transient
+    end_time = 3e-7
+    petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
+    solve_type = NEWTON
+    petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
+    petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
+    nl_rel_tol = 1e-08
+    dtmin = 1e-14
+    l_max_its = 20
+
+    #Time steps based on the inverse of the plasma frequency
+    [./TimeStepper]
+        type = PostprocessorDT
+        postprocessor = InversePlasmaFreq
+    [../]
 []
 
 [Outputs]
+    perf_graph = true
   [./out]
     type = Exodus
   [../]

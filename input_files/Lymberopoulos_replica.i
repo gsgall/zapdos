@@ -158,15 +158,15 @@ dom0Scale = 25.4e-3
     [../]
 
     [./Ar*_left]
-        type = LogDensityDirichletBC
-        value = 100
+        type = ADDirichletBC
+        value = -50
         variable = Ar*
         boundary = 'left'
     [../]
 
     [./Ar*_right]
-        type = LogDensityDirichletBC
-        value = 100
+        type = ADDirichletBC
+        value = -50
         variable = Ar*
         boundary = 'right'
     [../]
@@ -225,12 +225,6 @@ dom0Scale = 25.4e-3
         type = ParsedFunction
         value = '0.100 * sin(2 * 3.1415926 * 13.56e6 * t)'
     [../]
-
-    ## RF_Plasma functions
-    [./potential_bc_func]
-      type = ParsedFunction
-      value = '0.100*sin(2*3.1415926*13.56e6*t)'
-    [../]
 []
 
 [Materials]
@@ -250,11 +244,11 @@ dom0Scale = 25.4e-3
         position_units = ${dom0Scale}
     [../]
 
-    [./gas_species_0]
-        # charged particles need mobility and diffusivity
+    [./Argon_Ions]
+        # charged particles need mobility and diffusivity5rf
         # mobility accounts for affects from electric fields
         # diffusivity accounts for the motion of the particles
-        type = HeavySpeciesMaterial
+        type = ADHeavySpecies
         heavy_species_name = Ar+
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 1.0
@@ -262,19 +256,19 @@ dom0Scale = 25.4e-3
         diffusivity = 6.428571e-3
     [../]
 
-    [./gas_species_1]
+    [./Argon_Metastables]
         # Meta Stables need to have diffusivity but not mobility because they are being tracked
         # but they are still a neutral species so there are not affects from the electric fields
-        type = HeavySpeciesMaterial
+        type = ADHeavySpecies
         heavy_species_name = Ar*
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 0.0
         diffusivity = 7.515528e-3
     [../]
 
-    [./gas_species_2]
+    [./Argon_Neutrals]
         # neutral species do not mobility or diffusivity becuase we are not keeping track of them
-        type = HeavySpeciesMaterial
+        type = ADHeavySpecies
         heavy_species_name = Ar
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 0.0
@@ -289,22 +283,37 @@ dom0Scale = 25.4e-3
 []
 
 
-[Executioner]
-  type = Transient
-  end_time = 3e-7
-  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
-  solve_type = NEWTON
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
-  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
-  nl_rel_tol = 1e-08
-  dtmin = 1e-14
-  l_max_its = 20
+#New postprocessor that calculates the inverse of the plasma frequency
+[Postprocessors]
+    [./InversePlasmaFreq]
+        type = PlasmaFrequencyInverse
+        variable = em
+        use_moles = true
+        execute_on = 'INITIAL TIMESTEP_BEGIN'
+    [../]
+[]
 
-  ## These are needed for the time sclaes of plasmas
-  scheme = bdf2
-  dt = 1e-9
-  automatic_scaling = true
-  compute_scaling_once = false
+[Executioner]
+    type = Transient
+    end_time = 3e-7
+    petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
+    solve_type = NEWTON
+    petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
+    petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
+    nl_rel_tol = 1e-08
+    dtmin = 1e-14
+    l_max_its = 20
+
+    #Time steps based on the inverse of the plasma frequency
+    [./TimeStepper]
+        type = PostprocessorDT
+        postprocessor = InversePlasmaFreq
+    [../]
+#        ## These are needed for the time sclaes of RF plasmas
+#    scheme = bdf2
+#    dt = 1e-9
+#    automatic_scaling = true
+#    compute_scaling_once = false
 []
 
 [Outputs]

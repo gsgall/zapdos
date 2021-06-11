@@ -10,7 +10,7 @@ dom1Scale = 1e-7 # scaling for block 1
 [Mesh]
     [./file]
         type = FileMeshGenerator
-        file = 'liquidNew.msh' # msh file being used
+        file = 'Lindsay.msh' # msh file being used
     [../]
 
     [./water_to_air]
@@ -24,7 +24,6 @@ dom1Scale = 1e-7 # scaling for block 1
     [../]
 
     [./air_to_water]
-        ##TODO swtich this to air_to_water
         # interface going from water to air
         type = SideSetsBetweenSubdomainsGenerator
         primary_block = '1' #the block where the physics is happening
@@ -132,6 +131,7 @@ dom1Scale = 1e-7 # scaling for block 1
         use_log = true # always include this becuse zapdos does not currently support non log options
         position_units = ${dom0Scale}
         block = 0
+        use_ad = true
         reactions = 'Ar + em -> Ar* + em          : EEDF [-11.5] (ar_excitation.txt)
                      Ar + em -> Ar+ + em + em     : EEDF [-15.76] (ar_ionization.txt)
                      Ar + em -> Ar + em           : EEDF [elastic] (ar_elastic.txt)'
@@ -384,21 +384,11 @@ dom1Scale = 1e-7 # scaling for block 1
         type = ParsedFunction
         value = '-1.25 * (1.0001e-3 - x)' # the potential needs a small spark for solution stability
     [../]
-
-    [./potential_bc_func]
-      type = ParsedFunction
-      # value = '1.25*tanh(1e6*t)'
-      value = -1.25
-    [../]
-    
-    [./potential_ic_func]
-      type = ParsedFunction
-      value = '-1.25 * (1.0001e-3 - x)'
-    [../]
 []
 
 
 [Materials]
+
     [./Argon_electrons]
         type = GasElectronMoments
         # will be used for water as well
@@ -421,7 +411,7 @@ dom1Scale = 1e-7 # scaling for block 1
         # charged particles need mobility and diffusivity
         # mobility accounts for affects from electric fields
         # diffusivity accounts for the motion of the particles
-        type = HeavySpeciesMaterial
+        type = ADHeavySpecies
         heavy_species_name = Ar+
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 1.0
@@ -432,7 +422,7 @@ dom1Scale = 1e-7 # scaling for block 1
 
     [./Argon_neutrals]
         # neutral species do not mobility or diffusivity becuase we are not keeping track of them
-        type = HeavySpeciesMaterial
+        type = HeavySpecies
         heavy_species_name = Ar
         heavy_species_mass = 6.64e-26
         heavy_species_charge = 0.0
@@ -442,14 +432,21 @@ dom1Scale = 1e-7 # scaling for block 1
     # using constant water properties becuase eps is different in the Waster.C file than in GasElectronMoments
     # that difference also changes the diffpotential value
     [./water_properties]
+        type = ADGenericConstantMaterial
+        prop_names = 'diffpotential'
+        prop_values = '7.0800e-10'
+        block = 1
+    [../]
+
+    [./water_properties_non_AD]
         type = GenericConstantMaterial
-        prop_names = 'eps T_gas p_gas user_se_coeff N_A e  k_boltz diffpotential'
-        prop_values = '7.0800e-10 300 101325 0.05 6.02e23 1.6e-19 1.38e-23 7.0800e-10'
+        prop_names = 'T_gas eps p_gas user_se_coeff N_A e  k_boltz'
+        prop_values = '300 7.0800e-10 101325 0.05 6.02e23 1.6e-19 1.38e-23'
         block = 1
     [../]
 
     [./Hydrated_electrons]
-        type = HeavySpeciesMaterial
+        type = ADHeavySpecies
         heavy_species_name = emliq
         heavy_species_mass = 9.109e-31
         heavy_species_charge = -1
@@ -459,7 +456,7 @@ dom1Scale = 1e-7 # scaling for block 1
     [../]
 
     [./OH-]
-        type = HeavySpeciesMaterial
+        type = ADHeavySpecies
         heavy_species_name = OH-
         heavy_species_mass = 2.8246e-23
         heavy_species_charge = -1
