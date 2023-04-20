@@ -119,8 +119,8 @@ dom1Scale = 1e-7
   [Plasma]
     electrons = em
     charged_particle = Arp
-    potential = potential
-    Is_potential_unique = false
+    field = potential
+    Is_field_unique = false
     mean_energy = mean_en
     using_offset = true
     position_units = ${dom0Scale}
@@ -130,8 +130,8 @@ dom1Scale = 1e-7
   [Water]
     electrons = emliq
     charged_particle = OHm
-    potential = potential
-    Is_potential_unique = false
+    field = potential
+    Is_field_unique = false
     using_offset = true
     position_units = ${dom1Scale}
     block = 1
@@ -144,7 +144,6 @@ dom1Scale = 1e-7
   [em_ionization]
     type = ElectronsFromIonization
     variable = em
-    potential = potential
     mean_en = mean_en
     em = em
     block = 0
@@ -165,7 +164,6 @@ dom1Scale = 1e-7
   [Arp_ionization]
     type = IonsFromIonization
     variable = Arp
-    potential = potential
     em = em
     mean_en = mean_en
     block = 0
@@ -188,7 +186,6 @@ dom1Scale = 1e-7
   [mean_en_ionization]
     type = ElectronEnergyLossFromIonization
     variable = mean_en
-    potential = potential
     em = em
     block = 0
     position_units = ${dom0Scale}
@@ -196,7 +193,6 @@ dom1Scale = 1e-7
   [mean_en_elastic]
     type = ElectronEnergyLossFromElastic
     variable = mean_en
-    potential = potential
     em = em
     block = 0
     position_units = ${dom0Scale}
@@ -204,7 +200,6 @@ dom1Scale = 1e-7
   [mean_en_excitation]
     type = ElectronEnergyLossFromExcitation
     variable = mean_en
-    potential = potential
     em = em
     block = 0
     position_units = ${dom0Scale}
@@ -290,7 +285,6 @@ dom1Scale = 1e-7
   [PowerDep_em]
     type = ADPowerDep
     density_log = em
-    potential = potential
     art_diff = false
     potential_units = kV
     variable = PowerDep_em
@@ -300,7 +294,6 @@ dom1Scale = 1e-7
   [PowerDep_Arp]
     type = ADPowerDep
     density_log = Arp
-    potential = potential
     art_diff = false
     potential_units = kV
     variable = PowerDep_Arp
@@ -310,7 +303,6 @@ dom1Scale = 1e-7
   [ProcRate_el]
     type = ADProcRate
     em = em
-    potential = potential
     proc = el
     variable = ProcRate_el
     position_units = ${dom0Scale}
@@ -319,7 +311,6 @@ dom1Scale = 1e-7
   [ProcRate_ex]
     type = ADProcRate
     em = em
-    potential = potential
     proc = ex
     variable = ProcRate_ex
     position_units = ${dom0Scale}
