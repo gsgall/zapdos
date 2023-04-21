@@ -319,7 +319,6 @@ dom1Scale = 1e-7
   [ProcRate_iz]
     type = ADProcRate
     em = em
-    potential = potential
     proc = iz
     variable = ProcRate_iz
     position_units = ${dom0Scale}
@@ -372,13 +371,11 @@ dom1Scale = 1e-7
   [tot_flux_OHm]
     block = 1
     type = ADTotalFlux
-    potential = potential
     density_log = OHm
     variable = tot_flux_OHm
   []
   [EFieldAdvAux_em]
     type = ADEFieldAdvAux
-    potential = potential
     density_log = em
     variable = EFieldAdvAux_em
     block = 0
@@ -393,7 +390,6 @@ dom1Scale = 1e-7
   []
   [EFieldAdvAux_emliq]
     type = ADEFieldAdvAux
-    potential = potential
     density_log = emliq
     variable = EFieldAdvAux_emliq
     block = 1
@@ -412,7 +408,6 @@ dom1Scale = 1e-7
   [em_advection]
     type = InterfaceAdvection
     mean_en_neighbor = mean_en
-    potential_neighbor = potential
     neighbor_var = em
     variable = emliq
     boundary = master1_interface
@@ -435,7 +430,6 @@ dom1Scale = 1e-7
     type = HagelaarEnergyBC
     variable = mean_en
     boundary = 'master0_interface'
-    potential = potential
     em = em
     r = 0.99
     position_units = ${dom0Scale}
@@ -444,7 +438,6 @@ dom1Scale = 1e-7
     type = HagelaarEnergyBC
     variable = mean_en
     boundary = 'left'
-    potential = potential
     em = em
     r = 0
     position_units = ${dom0Scale}
@@ -453,7 +446,6 @@ dom1Scale = 1e-7
     type = SecondaryElectronEnergyBC
     variable = mean_en
     boundary = 'left'
-    potential = potential
     em = em
     ip = 'Arp'
     r = 0
@@ -482,7 +474,6 @@ dom1Scale = 1e-7
     type = HagelaarElectronBC
     variable = em
     boundary = 'master0_interface'
-    potential = potential
     mean_en = mean_en
     r = 0.99
     position_units = ${dom0Scale}
@@ -498,7 +489,6 @@ dom1Scale = 1e-7
     type = HagelaarIonAdvectionBC
     variable = Arp
     boundary = 'master0_interface'
-    potential = potential
     r = 0
     position_units = ${dom0Scale}
   []
@@ -507,7 +497,6 @@ dom1Scale = 1e-7
     type = HagelaarElectronBC
     variable = em
     boundary = 'left'
-    potential = potential
     mean_en = mean_en
     r = 0
     position_units = ${dom0Scale}
@@ -516,7 +505,6 @@ dom1Scale = 1e-7
     type = SecondaryElectronBC
     variable = em
     boundary = 'left'
-    potential = potential
     ip = Arp
     mean_en = mean_en
     r = 0
@@ -533,7 +521,6 @@ dom1Scale = 1e-7
     type = HagelaarIonAdvectionBC
     variable = Arp
     boundary = 'left'
-    potential = potential
     r = 0
     position_units = ${dom0Scale}
   []
@@ -542,14 +529,12 @@ dom1Scale = 1e-7
     type = DCIonBC
     variable = emliq
     boundary = right
-    potential = potential
     position_units = ${dom1Scale}
   []
   [OHm_physical]
     type = DCIonBC
     variable = OHm
     boundary = 'right'
-    potential = potential
     position_units = ${dom1Scale}
   []
 []
@@ -611,7 +596,6 @@ dom1Scale = 1e-7
     interp_elastic_coeff = true
     ramp_trans_coeffs = false
     em = em
-    potential = potential
     ip = Arp
     mean_en = mean_en
     user_se_coeff = 0.05
@@ -621,6 +605,5 @@ dom1Scale = 1e-7
   [water_block]
     type = Water
     block = 1
-    potential = potential
   []
 []

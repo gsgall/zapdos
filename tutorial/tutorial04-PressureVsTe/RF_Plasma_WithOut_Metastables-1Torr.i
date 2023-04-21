@@ -184,7 +184,6 @@ dom0Scale = 1.0
   [em_Ar+_second_emissions]
     type = SakiyamaSecondaryElectronBC
     variable = em
-    potential = potential
     ip = Ar+
     users_gamma = 0.01
     boundary = 'left right'
@@ -195,7 +194,6 @@ dom0Scale = 1.0
   [Ar+_physical_advection]
     type = SakiyamaIonAdvectionBC
     variable = Ar+
-    potential = potential
     boundary = 'left right'
     position_units = ${dom0Scale}
   []
@@ -213,7 +211,6 @@ dom0Scale = 1.0
     variable = mean_en
     em = em
     ip = Ar+
-    potential = potential
     Tse_equal_Te = false
     user_se_energy = 1
     se_coeff = 0.01
@@ -235,8 +232,6 @@ dom0Scale = 1.0
     ramp_trans_coeffs = false
     #Name for electrons (usually 'em')
     em = em
-    #Name for potential (usually 'potential')
-    potential = potential
     #Name for the electron mean energy density (usually 'mean_en')
     mean_en = mean_en
     #User difine pressure in pa
