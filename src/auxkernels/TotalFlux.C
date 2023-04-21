@@ -26,7 +26,6 @@ TotalFluxTempl<is_ad>::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addRequiredCoupledVar("density_log", "The electron density");
-  params.addRequiredCoupledVar("potential", "The potential");
   params.addClassDescription("Returns the total flux of defined species");
 
   return params;
