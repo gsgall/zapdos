@@ -3,7 +3,7 @@
 []
 
 [Mesh]
-  file = 'single_fluid_with_plate_out.e'
+  file = 'mixing_fluid_air_trans_out.e'
   second_order = true
 []
 
@@ -28,6 +28,7 @@
 
   # Mass Fraction of He
   [w_he]
+    # initial_from_file_var = 'w_he'
     order = SECOND
     family = LAGRANGE
     block = 'plasma'
@@ -118,7 +119,7 @@
     type = DirichletBC
     variable = w_he
     boundary = 'upper_atmosphere lower_atmosphere'
-    value = 0.1
+    value = 0.5
     preset = false
   []
 
@@ -183,7 +184,7 @@
     variable = w_he
     function = 'if (x < 1.25e-3 & y > 4.1e-3,
                     1,
-                    0.1 *( 1 + 1 * (0.5 - 0.5 * tanh(9750 * x - 12.5)) * (0.5 + 0.5 * tanh(1500 * y  - 3) ))
+                    0.1 + 0.9 * (0.5 - 0.5 * tanh(9750 * x - 12.5)) * (0.5 + 0.5 * tanh(1500 * y  - 3) )
                     )'
     block = 'plasma'
   []
@@ -321,7 +322,6 @@
   console = true
   [out]
     type = Exodus
-    file_base = 'mixing_fluid_10_helium_atmosphere'
   []
 
   [out_nl]
