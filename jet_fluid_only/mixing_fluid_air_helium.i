@@ -119,7 +119,7 @@
     type = DirichletBC
     variable = w_he
     boundary = 'upper_atmosphere lower_atmosphere'
-    value = 0.5
+    value = 0.3
     preset = false
   []
 
@@ -184,7 +184,7 @@
     variable = w_he
     function = 'if (x < 1.25e-3 & y > 4.1e-3,
                     1,
-                    0.1 + 0.9 * (0.5 - 0.5 * tanh(9750 * x - 12.5)) * (0.5 + 0.5 * tanh(1500 * y  - 3) )
+                    0.3 + 0.7 * (0.5 - 0.5 * tanh(9750 * x - 12.5)) * (0.5 + 0.5 * tanh(1500 * y  - 3) )
                     )'
     block = 'plasma'
   []
