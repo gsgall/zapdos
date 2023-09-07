@@ -139,7 +139,7 @@ Plane Surface(51) = {50};
 Physical Surface("plasma") = {51};
 
 
-max = 4e-1 * mm_to_m;
+max = 5e-1 * mm_to_m;
 channel = 1 / 2;
 // inlet = 1 / 15;
 electrode = 1 / 6;
@@ -148,7 +148,8 @@ electrode = 1 / 6;
 start_tip_refine = tip_to_plate_distance + tip_length + 0.7 * mm_to_m;
 stop_tip_refine = tip_to_plate_distance - 1 * mm_to_m;
 
-corner_box_tickness = 0.2 * mm_to_m
+corner_box_thickness = 2 * mm_to_m;
+
 Field[1] = Box;
 Field[1].VIn = max * electrode;
 Field[1].VOut = max;
@@ -174,8 +175,8 @@ Field[3] = Box;
 Field[3].VIn = max * channel / 1.5;
 Field[3].VOut = max;
 Field[3].XMin = inner_radius + quartz_thickness;
-Field[3].XMax =inner_radius + quartz_thickness + corner_box_tickness;
-Field[3].YMin = quartz_to_plate_distance+ effluent_boundary_y - corner_box_tickness;
+Field[3].XMax = inner_radius + quartz_thickness + corner_box_thickness;
+Field[3].YMin = quartz_to_plate_distance+ effluent_boundary_y - corner_box_thickness;
 Field[3].YMax = quartz_to_plate_distance + effluent_boundary_y;
 Field[3].Thickness = 0.5 * mm_to_m;
 
@@ -183,25 +184,34 @@ Field[3].Thickness = 0.5 * mm_to_m;
 Field[4] = Box;
 Field[4].VIn = max * channel / 1.5;
 Field[4].VOut = max;
-Field[4].XMin = 1.5e-3;
-Field[4].XMax = 3e-3;
-Field[4].YMin = 1.2e-2 + 55 * mm_to_m;
-Field[4].YMax = 1.4e-2 + 55 * mm_to_m;
+Field[4].XMin = target_radius + inner_radius + quartz_thickness + effluent_boundary_x - corner_box_thickness;
+Field[4].XMax = target_radius + inner_radius + quartz_thickness + effluent_boundary_x;
+Field[4].YMin = quartz_to_plate_distance+ effluent_boundary_y - corner_box_thickness;
+Field[4].YMax = quartz_to_plate_distance + effluent_boundary_y;
 Field[4].Thickness = 0.5 * mm_to_m;
 
 
 Field[5] = Box;
 Field[5].VIn = max * channel / 1.5;
 Field[5].VOut = max;
-Field[5].XMin = 2.3e-2 + 55 * mm_to_m;
-Field[5].XMax = 2.45e-2 + 55 * mm_to_m;
-Field[5].YMin = -1.2e-2 ;
-Field[5].YMax = 0;
+Field[5].XMin = target_radius + inner_radius + quartz_thickness + effluent_boundary_x - corner_box_thickness;
+Field[5].XMax = target_radius + inner_radius + quartz_thickness + effluent_boundary_x;
+Field[5].YMin = -target_height + corner_box_thickness;
+Field[5].YMax = -target_height;
 Field[5].Thickness = 0.5 * mm_to_m;
 
 
+Field[6] = Box;
+Field[6].VIn = max * channel / 1.5;
+Field[6].VOut = max;
+Field[6].XMin = target_radius - corner_box_thickness;
+Field[6].XMax = target_radius + corner_box_thickness;
+Field[6].YMin = -target_height + corner_box_thickness;
+Field[6].YMax = -target_height;
+Field[6].Thickness = 0.5 * mm_to_m;
+
 Field[20] = Min;
-Field[20].FieldsList = {1, 2, 3, 4, 5};
+Field[20].FieldsList = {1, 2, 3, 4, 5, 6};
 Background Field = 20;
 
-Mesh.ElementOrder = 1;
+Mesh.ElementOrder = 2;

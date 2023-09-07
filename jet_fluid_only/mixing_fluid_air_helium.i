@@ -132,7 +132,7 @@ helium_fraction = 0.5
   [wall]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'quartz_boundary electrode_wall electrode_tip target'
+    boundary = 'quartz_boundary electrode_wall electrode_tip target side_atmosphere lower_atmosphere  upper_atmosphere'
     function_x = 0
     function_y = 0
   []
@@ -141,7 +141,7 @@ helium_fraction = 0.5
     type = INSADMomentumNoBCBC
     variable = velocity
     pressure = p
-    boundary = 'axis_of_symmetry side_atmosphere lower_atmosphere  upper_atmosphere'
+    boundary = 'axis_of_symmetry'
   []
 
   [pressure_condition]
