@@ -5,9 +5,6 @@
 [Mesh]
   file = 'jet_mesh.msh'
   second_order = true
-[]
-
-[Problem]
   coord_type = RZ
   rz_coord_axis = Y
 []
@@ -98,7 +95,7 @@
   [wall]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'quartz_boundary electrode_wall electrode_tip inner_quartz_boundary target lower_atmosphere upper_atmosphere'
+    boundary = 'quartz_boundary electrode_wall electrode_tip target side_atmosphere lower_atmosphere  upper_atmosphere'
     function_x = 0
     function_y = 0
   []
@@ -107,46 +104,46 @@
     type = INSADMomentumNoBCBC
     variable = velocity
     pressure = p
-    boundary = 'upper_axis_of_symmetry axis_of_symmetry'
+    boundary = 'axis_of_symmetry'
   []
 
   [pressure_condition]
-    type = DirichletBC
+    type = PenaltyDirichletBC
     variable = p
-    boundary = 'upper_atmosphere lower_atmosphere'
+    boundary = 'upper_atmosphere lower_atmosphere side_atmosphere'
     value = 101325
-    preset = false
+    penalty = 1e5
   []
 []
 
 [Functions]
   [max_vel]
     type = ParsedFunction
-    value = '8.4'
+    expression = '8.5'
   []
 
   [inlet_r_start]
     type = ParsedFunction
-    value = '0.5 / 1000'
+    expression = '0.5 / 1000'
   []
 
   [inlet_r_end]
     type = ParsedFunction
-    value = '1 / 1000'
+    expression = '1 / 1000'
   []
 
   [inlet_r_center]
     type = ParsedFunction
-    vars = 'inlet_r_start inlet_r_end'
-    vals = 'inlet_r_start inlet_r_end'
-    value = '( inlet_r_start + inlet_r_end ) / 2'
+    symbol_names = 'inlet_r_start inlet_r_end'
+    symbol_values = 'inlet_r_start inlet_r_end'
+    expression = '( inlet_r_start + inlet_r_end ) / 2'
   []
 
   [inlet_func]
     type = ParsedFunction
-    vars = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
-    vals = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
-    value = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
+    symbol_names = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
+    symbol_values = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
+    expression = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
   []
 []
 
@@ -178,8 +175,8 @@
   type = Steady
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
   petsc_options_value = 'lu NONZERO 1.e-10'
-  # nl_rel_tol = 1e-7
   nl_max_its = 50
+  nl_rel_tol = 5e-08
   automatic_scaling = true
 []
 

@@ -24,11 +24,13 @@ quartz_thickness = 0.5 * mm_to_m;
 
 corner_round_radius = 0.08 * mm_to_m;
 
-effluent_boundary_x = 10 * mm_to_m;
-effluent_boundary_y = 10 * mm_to_m;
-
 target_radius = 13 * mm_to_m;
 target_height = 2 * mm_to_m;
+
+
+effluent_boundary_x = 50 * mm_to_m - target_radius;
+effluent_boundary_y = 50 * mm_to_m;
+
 
 Point(0) = {0, tip_to_plate_distance + tip_length + electrode_straight_length, 0};
 Point(1) = {0, tip_to_plate_distance + tip_length, 0};
@@ -121,12 +123,15 @@ Line(273) = {27, 3};
 Physical Line("electrode_tip") = {324, 45, 567};
 Physical Line("electrode_wall") = {78};
 Physical Line("inlet") = {89};
-Physical Line("inner_quartz_boundary") = {926};
-Physical Line("quartz_boundary") = {101112, 1213, 131415, 1516,  2610};
+Physical Line("quartz_boundary") = {926,2610, 1516, 1213, 101112, 131415};
+// Physical Line("horizontal_quartz_boundary") = {101112, 1213, 131415, 1516};\
+// Physical Line("horizontal_quartz_boundary") = {};
+// Physical Line("rounded_quartz_boundary") = {};
 Physical Line("upper_atmosphere") = {161718, 1819, 192021};
-Physical Line("lower_atmosphere") = {333231, 2433, 222324, 2122};
-Physical Line("upper_axis_of_symmetry")= {273};
-Physical Line("axis_of_symmetry") = {2527};
+Physical Line("lower_atmosphere") = {333231, 2433, 222324};
+
+Physical Line("side_atmosphere") = {2122};
+Physical Line("axis_of_symmetry") = {273, 2527};
 Physical Line("target") = {2825, 302928, 3130};
 // plasma domain
 Line Loop(50) = {324, 45, 567, 78, 89, 926, 2610, 101112, 1213, 131415, 1516, 161718, 1819, 192021, 2122, 222324, 2433, 333231, 3130, 302928, 2825, 2527, 273};
@@ -134,7 +139,7 @@ Plane Surface(51) = {50};
 Physical Surface("plasma") = {51};
 
 
-max = 3e-1 * mm_to_m;
+max = 4e-1 * mm_to_m;
 channel = 1 / 2;
 // inlet = 1 / 15;
 electrode = 1 / 6;
@@ -143,6 +148,7 @@ electrode = 1 / 6;
 start_tip_refine = tip_to_plate_distance + tip_length + 0.7 * mm_to_m;
 stop_tip_refine = tip_to_plate_distance - 1 * mm_to_m;
 
+corner_box_tickness = 0.2 * mm_to_m
 Field[1] = Box;
 Field[1].VIn = max * electrode;
 Field[1].VOut = max;
@@ -163,8 +169,39 @@ Field[2].YMin = start_tip_refine;
 Field[2].YMax = start_channel_refine;
 Field[2].Thickness = 1 * mm_to_m;
 
+
+Field[3] = Box;
+Field[3].VIn = max * channel / 1.5;
+Field[3].VOut = max;
+Field[3].XMin = inner_radius + quartz_thickness;
+Field[3].XMax =inner_radius + quartz_thickness + corner_box_tickness;
+Field[3].YMin = quartz_to_plate_distance+ effluent_boundary_y - corner_box_tickness;
+Field[3].YMax = quartz_to_plate_distance + effluent_boundary_y;
+Field[3].Thickness = 0.5 * mm_to_m;
+
+
+Field[4] = Box;
+Field[4].VIn = max * channel / 1.5;
+Field[4].VOut = max;
+Field[4].XMin = 1.5e-3;
+Field[4].XMax = 3e-3;
+Field[4].YMin = 1.2e-2 + 55 * mm_to_m;
+Field[4].YMax = 1.4e-2 + 55 * mm_to_m;
+Field[4].Thickness = 0.5 * mm_to_m;
+
+
+Field[5] = Box;
+Field[5].VIn = max * channel / 1.5;
+Field[5].VOut = max;
+Field[5].XMin = 2.3e-2 + 55 * mm_to_m;
+Field[5].XMax = 2.45e-2 + 55 * mm_to_m;
+Field[5].YMin = -1.2e-2 ;
+Field[5].YMax = 0;
+Field[5].Thickness = 0.5 * mm_to_m;
+
+
 Field[20] = Min;
-Field[20].FieldsList = {1, 2};
+Field[20].FieldsList = {1, 2, 3, 4, 5};
 Background Field = 20;
 
 Mesh.ElementOrder = 1;

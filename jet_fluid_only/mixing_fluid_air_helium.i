@@ -1,13 +1,12 @@
+helium_fraction = 0.5
+
 [GlobalParams]
   integrate_p_by_parts = true
 []
 
 [Mesh]
-  file = 'mixing_fluid_air_trans_out.e'
+  file = 'single_fluid_with_plate_out.e'
   second_order = true
-[]
-
-[Problem]
   coord_type = RZ
   rz_coord_axis = Y
 []
@@ -28,7 +27,6 @@
 
   # Mass Fraction of He
   [w_he]
-    # initial_from_file_var = 'w_he'
     order = SECOND
     family = LAGRANGE
     block = 'plasma'
@@ -118,8 +116,8 @@
   [w_he_atmosphere]
     type = DirichletBC
     variable = w_he
-    boundary = 'upper_atmosphere lower_atmosphere'
-    value = 0.3
+    boundary = 'lower_atmosphere upper_atmosphere side_atmosphere'
+    value = ${helium_fraction}
     preset = false
   []
 
@@ -129,31 +127,30 @@
     boundary = 'inlet'
     function_x = 0
     function_y = 'inlet_func'
-    # preset = false
   []
 
   [wall]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'quartz_boundary electrode_wall electrode_tip inner_quartz_boundary target upper_atmosphere lower_atmosphere'
+    boundary = 'quartz_boundary electrode_wall electrode_tip target'
     function_x = 0
     function_y = 0
-    # preset = false
   []
 
   [outlet]
     type = INSADMomentumNoBCBC
     variable = velocity
     pressure = p
-    boundary = 'upper_axis_of_symmetry axis_of_symmetry'
+    boundary = 'axis_of_symmetry side_atmosphere lower_atmosphere  upper_atmosphere'
   []
 
   [pressure_condition]
-    type = DirichletBC
+    type = PenaltyDirichletBC
     variable = p
-    boundary = 'upper_atmosphere lower_atmosphere'
+    boundary = 'upper_atmosphere lower_atmosphere side_atmosphere'
     value = 101325
-    preset = false
+    # preset = false
+    penalty = 1e5
   []
 []
 
@@ -167,24 +164,12 @@
     function_z = 'vel_z_ic'
   []
 
-  # [w_he_ic]
-  #   type = BoundingBoxIC
-  #   variable = w_he
-  #   x1 = 0
-  #   x2 = 1.2e-3
-  #   y1 = 7e-3
-  #   y2 = 21e-3
-  #   inside = 1
-  #   outside = 0
-  #   int_width = 0.25e-3
-  # []
-
   [w_he_ic]
     type = FunctionIC
     variable = w_he
     function = 'if (x < 1.25e-3 & y > 4.1e-3,
                     1,
-                    0.3 + 0.7 * (0.5 - 0.5 * tanh(9750 * x - 12.5)) * (0.5 + 0.5 * tanh(1500 * y  - 3) )
+                    ${helium_fraction} + (1 - ${helium_fraction}) * (0.5 - 0.5 * tanh(9750 * x - 12.5)) * (0.5 + 0.5 * tanh(1500 * y  - 3) )
                     )'
     block = 'plasma'
   []
@@ -208,31 +193,31 @@
 
   [max_vel]
     type = ParsedFunction
-    value = '8.5'
+    expression = '8.5'
   []
 
   [inlet_r_start]
     type = ParsedFunction
-    value = '0.5 / 1000'
+    expression = '0.5 / 1000'
   []
 
   [inlet_r_end]
     type = ParsedFunction
-    value = '1 / 1000'
+    expression = '1 / 1000'
   []
 
   [inlet_r_center]
     type = ParsedFunction
-    vars = 'inlet_r_start inlet_r_end'
-    vals = 'inlet_r_start inlet_r_end'
-    value = '( inlet_r_start + inlet_r_end ) / 2'
+    symbol_names = 'inlet_r_start inlet_r_end'
+    symbol_values = 'inlet_r_start inlet_r_end'
+    expression = '( inlet_r_start + inlet_r_end ) / 2'
   []
 
   [inlet_func]
     type = ParsedFunction
-    vars = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
-    vals = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
-    value = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
+    symbol_names = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
+    symbol_values = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
+    expression = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
   []
 []
 
@@ -293,7 +278,7 @@
   petsc_options_value = 'lu NONZERO 1.e-10'
   line_search = none
 
-  nl_abs_tol = 1e-8
+  nl_abs_tol = 2e-8
   nl_max_its = 15
 
   l_max_its = 300
@@ -308,14 +293,6 @@
   # steady_state_tolerance = 1e-3
   automatic_scaling = true
   compute_scaling_once = false
-[]
-
-[UserObjects]
-  [soln]
-    type = SolutionUserObject
-    mesh = 'single_fluid_with_plate_out.e'
-    system_variables = 'p vel_x vel_y'
-  []
 []
 
 [Outputs]
