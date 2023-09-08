@@ -1,4 +1,4 @@
-helium_fraction = 0.5
+helium_fraction = 0.5000
 
 [GlobalParams]
   integrate_p_by_parts = true
@@ -82,12 +82,6 @@ helium_fraction = 0.5
     variable = velocity
     pressure = p
     block = 'plasma'
-  []
-
-  [bouyancy_force]
-    type = INSADGravityForce
-    variable = velocity
-    gravity = '0 -9.81 0'
   []
 []
 
@@ -300,14 +294,13 @@ helium_fraction = 0.5
   [out]
     type = Exodus
   []
+  # [out_nl]
+  #   type = Exodus
+  #   execute_on = 'NONLINEAR'
+  # []
 
-  [out_nl]
-    type = Exodus
-    execute_on = 'NONLINEAR'
-  []
-
-  [out_l]
-    type = Exodus
-    execute_on = 'LINEAR'
-  []
+  # [out_l]
+  #   type = Exodus
+  #   execute_on = 'LINEAR'
+  # []
 []

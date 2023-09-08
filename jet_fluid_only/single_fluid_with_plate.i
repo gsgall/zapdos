@@ -47,12 +47,6 @@
     pressure = p
     block = 'plasma'
   []
-
-  [bouyancy_force]
-    type = INSADGravityForce
-    variable = velocity
-    gravity = '0 -9.81 0'
-  []
 []
 
 [AuxVariables]
