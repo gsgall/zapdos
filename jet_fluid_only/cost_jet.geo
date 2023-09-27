@@ -37,6 +37,8 @@ electrode_lower_center_offset_y1 = -0.08 * mm_to_m;
 
 electrode_upper_center_offset_x = -0.002 * mm_to_m;
 electrode_upper_center_offset_y = 0 * mm_to_m;
+// fins on the side of easier transition from no-slip to natural
+fin_width = 10 * mm_to_m;
 // axis of symmetry
 Point(0) = {0, 0, 0};
 Point(1) = {0, inner_channel_length, 0};
@@ -132,6 +134,9 @@ Point(66) = {target_width, -distance_to_target - target_height + round_radius, 0
 Point(67) = {(target_width), -distance_to_target - round_radius, 0};
 Point(68) = {(target_width - round_radius), -distance_to_target - round_radius, 0};
 Point(69) = {(target_width - round_radius), -distance_to_target, 0};
+// fins for transition BCs
+Point(70) = {-(outer_channel_x + fin_width), outer_channel_length + y_buffer, 0};
+Point(71) = {(outer_channel_x + fin_width), outer_channel_length + y_buffer, 0};
 // inlet
 Line(13) = {1, 3};
 Line(211) = {21,1};
@@ -145,13 +150,17 @@ Line(4540) = {45,40};
 Circle(252627) = {25,26,27};
 Circle(222324) = {22,23,24};
 Line(2722) = {27,22};
-Line(2428) = {24,28};
+Line(2470) = {24,70};
+Line(7028) = {70,28};
+// Line(2428) = {24,28};
 // atmosphere right
 Circle(464748) = {46,47,48};
 Line(4849) = {48,49};
 Circle(495051) = {49,50,51};
 Circle(525354) = {52,53,54};
-Line(5446) = {54,46};
+// Line(5446) = {54,46};
+Line(5471) = {54,71};
+Line(7146) = {71,46};
 Line(5164) = {51,64};
 // electrode left boundary
 Circle(282930) = {28,29,30};
@@ -178,12 +187,12 @@ Line(698) = {69,8};
 // // // boundaries
 Physical Line("target") = {646566,6667,676869,698,843,434445,4540,404142};
 Physical Line("atmosphere") = {464748,4849,495051,5164,4225,252627,2722,222324};
-Physical Line("upper_atmosphere") = {2428,282930,525354,5446};
-Physical Line("electrode") = {3037,373839,3934,343536,3631,313233,3321,355,555657,5758,585960,6061,616263,6352};
+Physical Line("upper_atmosphere") = {2470,282930,525354,7146};
+Physical Line("electrode") = {3037,373839,3934,343536,3631,313233,3321,355,555657,5758,585960,6061,616263,6352,7028, 5471};
 Physical Line("inlet") = {211,13};
 
 // // // defining the domain
-Line Loop(200) = {355,555657,5758,585960,6061,616263,6352,525354,5446,464748,4849,495051,5164,646566,6667,676869,698,843,434445,4540,404142,4225,252627,2722,222324,2428,282930,3037,373839,3934,343536,3631,313233,3321,211,13};
+Line Loop(200) = {355,555657,5758,585960,6061,616263,6352,525354,5471,7146,464748,4849,495051,5164,646566,6667,676869,698,843,434445,4540,404142,4225,252627,2722,222324,2470,7028,282930,3037,373839,3934,343536,3631,313233,3321,211,13};
 Plane Surface(201) = {200};
 Physical Surface("plasma") = {201};
 
@@ -293,10 +302,29 @@ Field[10].YMax = -distance_to_target - target_height + box_width;
 Field[10].Thickness = 4 * mm_to_m;
 
 
+// refine near the transition from no BC to no slip
+Field[11] = Box;
+Field[11].VIn = max * corner;
+Field[11].VOut = max;
+Field[11].XMin = (outer_channel_x +fin_width - box_width / 2);
+Field[11].XMax = (outer_channel_x + fin_width + box_width/2);
+Field[11].YMin = outer_channel_length + y_buffer;
+Field[11].YMax = outer_channel_length + y_buffer - box_width;
+Field[11].Thickness = 4 * mm_to_m;
+
+// refine near the transition from no BC to no slip
+Field[12] = Box;
+Field[12].VIn = max * corner;
+Field[12].VOut = max;
+Field[12].XMin = -(outer_channel_x + fin_width + box_width/2);
+Field[12].XMax = -(outer_channel_x +fin_width - box_width / 2);
+Field[12].YMin = outer_channel_length + y_buffer;
+Field[12].YMax = outer_channel_length + y_buffer - box_width;
+Field[12].Thickness = 4 * mm_to_m;
 
 
 Field[20] = Min;
-Field[20].FieldsList = {1, 2, 3, 4,5,6, 7, 8, 9, 10};
+Field[20].FieldsList = {1, 2, 3, 4,5,6, 7, 8, 9, 10,11, 12};
 Background Field = 20;
 
 Mesh.ElementOrder = 2;
