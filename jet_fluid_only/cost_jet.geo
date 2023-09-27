@@ -27,7 +27,7 @@ target_height = 4 * mm_to_m;
 x_buffer = 50 * mm_to_m;
 y_buffer = 0 * mm_to_m;
 // rounding corners that break simulations
-round_radius = 0.08 * mm_to_m;
+round_radius = 0.09* mm_to_m;
 
 electrode_offset_x = 0.08 * mm_to_m;
 electrode_lower_angle_offset_x2 = 0.08 * mm_to_m;

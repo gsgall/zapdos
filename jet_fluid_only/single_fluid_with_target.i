@@ -1,5 +1,5 @@
 [GlobalParams]
-  integrate_p_by_parts = true
+  integrate_p_by_parts = false
 []
 
 [Mesh]
@@ -28,6 +28,12 @@
     block = 'plasma'
   []
 
+  [momentum_time_derivative]
+    type = INSADMomentumTimeDerivative
+    variable = velocity
+    block = 'plasma'
+  []
+
   [momentum_convection]
     type = INSADMomentumAdvection
     variable = velocity
@@ -47,6 +53,12 @@
     block = 'plasma'
   []
 
+  [supg]
+    type = INSADMomentumSUPG
+    variable = velocity
+    velocity = velocity
+    block = 'plasma'
+  []
   # [gravity]
   #   type = INSADGravityForce
   #   variable = velocity
@@ -80,6 +92,21 @@
   []
 []
 
+[ICs]
+  [pressure]
+    type = ConstantIC
+    variable = p
+    value = 0
+    block = 'plasma'
+  []
+  [velocity]
+    type = VectorConstantIC
+    variable = velocity
+    x_value = 0
+    y_value = 0
+    block = 'plasma'
+  []
+[]
 [BCs]
   [inlet]
     type = VectorFunctionDirichletBC
@@ -92,24 +119,23 @@
   [wall]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode target upper_atmosphere'
+    boundary = 'electrode target upper_atmosphere atmosphere'
     function_x = 0
     function_y = 0
   []
 
-  [outlet]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'atmosphere'
-  []
+  # [outlet]
+  #   type = INSADMomentumNoBCBC
+  #   variable = velocity
+  #   pressure = p
+  #   boundary = 'atmosphere '
+  # []
 
   [pressure_condition]
     type = PenaltyDirichletBC
     variable = p
     boundary = 'atmosphere upper_atmosphere'
     value = 101325
-    # preset = false
     penalty = 1e5
   []
 
@@ -170,16 +196,24 @@
 [Materials]
   [fluid_mats]
     type = ADGenericConstantMaterial
-    prop_names = 'rho mu'
-    prop_values = '0.1598 1.9e-5'
+    prop_names = 'rho mu cp k'
+    prop_values = '0.1598 1.9e-5 1 1'
     block = 'plasma'
   []
 
+  # [ins_mat]
+  #   type = INSADMaterial
+  #   velocity = velocity
+  #   pressure = p
+  # []
+  #   block = 'plasma'
+
   [ins_mat]
-    type = INSADMaterial
+    type = INSADTauMaterial
     velocity = velocity
     pressure = p
     block = 'plasma'
+    alpha = 1
   []
 []
 
@@ -191,12 +225,37 @@
   []
 []
 
+# [Executioner]
+#   type = Steady
+#   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+#   petsc_options_value = 'lu NONZERO 1.e-10'
+#   # nl_rel_tol = 1e-7
+#   nl_max_its = 100
+#   automatic_scaling = true
+#   compute_scaling_once = false
+#   # line_search = none
+# []
+
 [Executioner]
-  type = Steady
+  type = Transient
+  solve_type = NEWTON
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
   petsc_options_value = 'lu NONZERO 1.e-10'
-  # nl_rel_tol = 1e-7
-  nl_max_its = 50
+  line_search = none
+
+  nl_abs_tol = 2e-8
+  nl_max_its = 15
+
+  l_max_its = 300
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    cutback_factor = 0.4
+    dt = 1e-8
+    growth_factor = 1.2
+    optimal_iterations = 10
+  []
+  steady_state_detection = true
+  # steady_state_tolerance = 1e-3
   automatic_scaling = true
   compute_scaling_once = false
 []
