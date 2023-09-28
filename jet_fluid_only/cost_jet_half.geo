@@ -8,9 +8,13 @@ angled_width = 3.5 * mm_to_m;
 
 angled_length = 3.5 * mm_to_m;
 outer_channel_length = inner_channel_length;
+
+pi = 3.14159265359;
+
 channel_width = 1 * mm_to_m;
 channel_depth = 1 * mm_to_m;
 
+channel_width = channel_width / pi^(1/2);
 
 inner_channel_start_x = channel_width/2;
 angled_length_start_x = total_width - angled_width + channel_width/2;
@@ -206,7 +210,7 @@ Physical Surface("plasma") = {201};
 
 // add refinements
 max = 10e-1 * mm_to_m;
-channel = 1 / 4;
+channel = 1 / 7;
 electrode = 1 / 6;
 corner = 1/7;
 box_width =  1 * mm_to_m;

@@ -5,6 +5,8 @@
 [Mesh]
   file = 'cost_jet_half.msh'
   second_order = true
+  rz_coord_axis = Y
+  coord_type = RZ
 []
 
 [Variables]
@@ -28,11 +30,11 @@
     block = 'plasma'
   []
 
-  [momentum_time_derivative]
-    type = INSADMomentumTimeDerivative
-    variable = velocity
-    block = 'plasma'
-  []
+  # [momentum_time_derivative]
+  #   type = INSADMomentumTimeDerivative
+  #   variable = velocity
+  #   block = 'plasma'
+  # []
 
   [momentum_convection]
     type = INSADMomentumAdvection
@@ -92,22 +94,22 @@
   []
 []
 
-[ICs]
-  [pressure]
-    type = ConstantIC
-    variable = p
-    value = 0
-    block = 'plasma'
-  []
+# [ICs]
+#   [pressure]
+#     type = ConstantIC
+#     variable = p
+#     value = 101325
+#     block = 'plasma'
+#   []
 
-  [velocity]
-    type = VectorFunctionIC
-    variable = velocity
-    function_x = 0
-    function_y = channel_func
-    block = 'plasma'
-  []
-[]
+#   [velocity]
+#     type = VectorFunctionIC
+#     variable = velocity
+#     function_x = 0
+#     function_y = channel_func
+#     block = 'plasma'
+#   []
+# []
 [BCs]
   [inlet]
     type = VectorFunctionDirichletBC
@@ -115,6 +117,13 @@
     boundary = 'inlet'
     function_x = 0
     function_y = 'inlet_func'
+  []
+
+  [no_bc]
+    type = INSADMomentumNoBCBC
+    variable = velocity
+    pressure = p
+    boundary = 'axis_of_symmetry'
   []
 
   [wall]
@@ -144,6 +153,13 @@
     symbol_values = '1.0      60          1e3'
     expression = 'flow_rate / (l_to_m3 * mins_to_sec)'
   []
+
+  [rad_eff]
+    type = ParsedFunction
+    symbol_names = 'channel_width channel_depth'
+    symbol_values = '1e-3 1e-3'
+    expression = 'sqrt( channel_width * channel_depth / pi )'
+  []
   # converting volumetric flow rate to velocity using
   # cross sectional area
   [max_vel]
@@ -155,33 +171,37 @@
 
   [inlet_r_start]
     type = ParsedFunction
-    value = '-0.5 / 1000'
+    symbol_names = 'rad_eff'
+    symbol_values = 'rad_eff'
+    value = '-rad_eff'
   []
 
   [inlet_r_end]
     type = ParsedFunction
-    value = '0.5 / 1000'
+    symbol_names = 'rad_eff'
+    symbol_values = 'rad_eff'
+    value = 'rad_eff'
   []
 
   [inlet_r_center]
     type = ParsedFunction
-    vars = 'inlet_r_start inlet_r_end'
-    vals = 'inlet_r_start inlet_r_end'
-    value = '( inlet_r_start + inlet_r_end ) / 2'
+    symbol_names = 'inlet_r_start inlet_r_end'
+    symbol_values = 'inlet_r_start inlet_r_end'
+    expression = '( inlet_r_start + inlet_r_end ) / 2'
   []
 
   [inlet_func]
     type = ParsedFunction
-    vars = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
-    vals = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
-    value = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
+    symbol_names = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
+    symbol_values = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
+    expression = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
   []
 
   [channel_func]
     type = ParsedFunction
-    symbol_names = 'inlet_func'
-    symbol_values = 'inlet_func'
-    expression = 'if (x > -0.5e-3 & x < 0.5e-3,
+    symbol_names = 'inlet_func inlet_r_end inlet_r_start'
+    symbol_values = 'inlet_func inlet_r_end inlet_r_start'
+    expression = 'if (x > inlet_r_start & x < inlet_r_end,
                   inlet_func,
                   0)'
   []
@@ -219,40 +239,40 @@
   []
 []
 
-# [Executioner]
-#   type = Steady
-#   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-#   petsc_options_value = 'lu NONZERO 1.e-10'
-#   # nl_rel_tol = 1e-7
-#   nl_max_its = 100
-#   automatic_scaling = true
-#   compute_scaling_once = false
-#   # line_search = none
-# []
-
 [Executioner]
-  type = Transient
-  solve_type = NEWTON
+  type = Steady
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
   petsc_options_value = 'lu NONZERO 1.e-10'
-  line_search = none
-
-  nl_abs_tol = 2e-8
-  nl_max_its = 15
-
-  l_max_its = 300
-  [TimeStepper]
-    type = IterationAdaptiveDT
-    cutback_factor = 0.4
-    dt = 1e-8
-    growth_factor = 1.2
-    optimal_iterations = 10
-  []
-  steady_state_detection = true
-  # steady_state_tolerance = 1e-3
+  # nl_rel_tol = 1e-7
+  nl_max_its = 100
   automatic_scaling = true
   compute_scaling_once = false
+  # line_search = none
 []
+
+# [Executioner]
+#   type = Transient
+#   solve_type = NEWTON
+#   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+#   petsc_options_value = 'lu NONZERO 1.e-10'
+#   line_search = none
+
+#   nl_abs_tol = 2e-8
+#   nl_max_its = 15
+
+#   l_max_its = 300
+#   [TimeStepper]
+#     type = IterationAdaptiveDT
+#     cutback_factor = 0.4
+#     dt = 1e-8
+#     growth_factor = 1.2
+#     optimal_iterations = 10
+#   []
+#   steady_state_detection = true
+#   # steady_state_tolerance = 1e-3
+#   automatic_scaling = true
+#   compute_scaling_once = false
+# []
 
 [Outputs]
   console = true
