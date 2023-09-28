@@ -3,7 +3,7 @@
 []
 
 [Mesh]
-  file = 'cost_jet.msh'
+  file = 'cost_jet_half.msh'
   second_order = true
 []
 
@@ -99,11 +99,12 @@
     value = 0
     block = 'plasma'
   []
+
   [velocity]
-    type = VectorConstantIC
+    type = VectorFunctionIC
     variable = velocity
-    x_value = 0
-    y_value = 0
+    function_x = 0
+    function_y = channel_func
     block = 'plasma'
   []
 []
@@ -124,13 +125,6 @@
     function_y = 0
   []
 
-  # [outlet]
-  #   type = INSADMomentumNoBCBC
-  #   variable = velocity
-  #   pressure = p
-  #   boundary = 'atmosphere '
-  # []
-
   [pressure_condition]
     type = PenaltyDirichletBC
     variable = p
@@ -138,15 +132,6 @@
     value = 101325
     penalty = 1e5
   []
-
-  # [pressure_condition]
-  #   type = DirichletBC
-  #   variable = p
-  #   boundary = 'atmosphere'
-  #   value = 101325
-  #   preset = false
-  # []
-
 []
 
 [Functions]
@@ -190,6 +175,15 @@
     vars = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
     vals = 'inlet_r_start inlet_r_end inlet_r_center max_vel'
     value = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
+  []
+
+  [channel_func]
+    type = ParsedFunction
+    symbol_names = 'inlet_func'
+    symbol_values = 'inlet_func'
+    expression = 'if (x > -0.5e-3 & x < 0.5e-3,
+                  inlet_func,
+                  0)'
   []
 []
 
