@@ -16,7 +16,7 @@ channel_depth = 1 * mm_to_m;
 
 channel_width = channel_width / pi^(1/2);
 
-inner_channel_start_x = channel_width/2;
+inner_channel_start_x = channel_width;
 angled_length_start_x = total_width - angled_width + channel_width/2;
 outer_channel_x = inner_channel_start_x + total_width;
 
@@ -28,7 +28,7 @@ target_width = 1 * inch_to_m;
 target_height = 4 * mm_to_m;
 
 // atmosphere for ample mixing space
-x_buffer = 50 * mm_to_m;
+x_buffer = 40 * mm_to_m;
 y_buffer = 0 * mm_to_m;
 // rounding corners that break simulations
 round_radius = 0.09* mm_to_m;
@@ -196,12 +196,12 @@ Line(698) = {69,8};
 // Physical Line("upper_axis_of_symmetry") = {70,01};
 // Physical Line("lower_axis_of_symmetry") = {87};
 Physical Line("axis_of_symmetry") = {87,70,01};
-Physical Line("target") = {646566,6667,676869,698,843,434445,4540,404142};
-Physical Line("atmosphere") = {464748,4849,495051,5164,4225,252627,2722,222324};
-Physical Line("upper_atmosphere") = {2470,282930,525354,7146};
-Physical Line("electrode") = {3037,373839,3934,343536,3631,313233,3321,355,555657,5758,585960,6061,616263,6352,7028, 5471};
+Physical Line("target") = {495051,5164,646566,6667,676869,698,843,434445,4540,404142};
+Physical Line("atmosphere") = {4849,4225,252627,2722,222324};
+Physical Line("upper_atmosphere") = {464748,2470,282930,7146};
+Physical Line("electrode") = {3037,525354,373839,3934,343536,3631,313233,3321,355,555657,5758,585960,6061,616263,6352,7028, 5471};
 Physical Line("inlet") = {211,13};
-
+Physical Point("pressure_pin") = {49};
 // // // defining the domain
 Line Loop(200) = {355,555657,5758,585960,6061,616263,6352,525354,5471,7146,464748,4849,495051,5164,646566,6667,676869,698,87,70,01,13};
 Plane Surface(201) = {200};
