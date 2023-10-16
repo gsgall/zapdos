@@ -1,11 +1,12 @@
 pressure = 101325
+helium_fraction = 0.0000
 
 [GlobalParams]
   integrate_p_by_parts = false
 []
 
 [Mesh]
-  file = 'cost_jet_half.msh'
+  file = 'single_fluid_with_target_out.e'
   second_order = true
   rz_coord_axis = Y
   coord_type = RZ
@@ -19,6 +20,7 @@ pressure = 101325
   []
 
   [p]
+    initial_from_file_var = 'p'
     order = FIRST
     family = LAGRANGE
     block = 'plasma'
@@ -28,9 +30,34 @@ pressure = 101325
     family = SCALAR
     order = FIRST
   []
+
+  [w_he]
+    order = SECOND
+    family = LAGRANGE
+    block = 'plasma'
+  []
 []
 
 [Kernels]
+  [w_he_time]
+    type = ADTimeDerivative
+    variable = w_he
+    block = 'plasma'
+  []
+
+  [w_he_diffusion]
+    type = ADMatDiffusion
+    variable = w_he
+    diffusivity = 'D'
+    block = 'plasma'
+  []
+
+  [w_he_advection]
+    type = ConservativeAdvection
+    variable = w_he
+    velocity = velocity
+  []
+
   [mean_zero_pressure]
     type = ScalarLagrangeMultiplier
     variable = p
@@ -94,10 +121,12 @@ pressure = 101325
   [vel_x]
     order = SECOND
     block = 'plasma'
+    initial_from_file_var = 'vel_x'
   []
   [vel_y]
     order = SECOND
     block = 'plasma'
+    initial_from_file_var = 'vel_y'
   []
 []
 
@@ -117,23 +146,47 @@ pressure = 101325
 []
 
 [ICs]
+  [velocity_ic]
+    type = CoupledVectorValueFunctionIC
+    variable = velocity
+    v = 'vel_x vel_y'
+    function_x = 'vel_x_ic'
+    function_y = 'vel_y_ic'
+    function_z = 'vel_z_ic'
+  []
+
+  [w_he]
+    type = FunctionIC
+    variable = w_he
+    function = w_he_ic
+    block = 'plasma'
+  []
+
   [pressure]
     type = ConstantIC
     variable = p
     value = ${pressure}
     block = 'plasma'
   []
-
-  [velocity]
-    type = VectorFunctionIC
-    variable = velocity
-    function_x = 0
-    function_y = channel_func
-    block = 'plasma'
-  []
 []
 
 [BCs]
+  [w_he_inlet]
+    type = DirichletBC
+    boundary = 'inlet'
+    variable = w_he
+    value = 1
+    preset = false
+  []
+
+  [w_he_atmosphere]
+    type = DirichletBC
+    variable = w_he
+    boundary = 'atmosphere'
+    value = ${helium_fraction}
+    preset = false
+  []
+
   [inlet]
     type = VectorFunctionDirichletBC
     variable = velocity
@@ -159,6 +212,21 @@ pressure = 101325
 []
 
 [Functions]
+  [vel_x_ic]
+    type = ParsedFunction
+    expression = 'x'
+  []
+
+  [vel_y_ic]
+    type = ParsedFunction
+    expression = 'y'
+  []
+
+  [vel_z_ic]
+    type = ParsedFunction
+    expression = '0'
+  []
+
   # convert flow rate to m^3/s
   [flow_rate_m3_s]
     type = ParsedFunction
@@ -220,22 +288,56 @@ pressure = 101325
                   inlet_func,
                   0)'
   []
+
+  [w_he_ic]
+    type = ParsedFunction
+    symbol_names = 'inlet_func inlet_r_end inlet_r_start'
+    symbol_values = 'inlet_func inlet_r_end inlet_r_start'
+    expression = 'if (x > inlet_r_start & x < inlet_r_end + 1e-4 & y > 0,
+                  1,
+                  ${helium_fraction})'
+  []
 []
 
 [Materials]
-  [fluid_mats]
-    type = ADGenericConstantMaterial
-    prop_names = 'rho mu'
-    prop_values = '0.1598 1.9e-5'
-    block = 'plasma'
-  []
-
   [ins_mat]
     type = INSADTauMaterial
     velocity = velocity
     pressure = p
     block = 'plasma'
     alpha = 1
+  []
+  # helium material properties
+  # Diffusion coefficient from https://iopscience.iop.org/article/10.1088/0963-0252/23/3/035007/pdf
+  [diffusion_coeff]
+    type = ADGenericConstantMaterial
+    prop_names = 'D'
+    prop_values = '7.2e-5'
+  []
+
+  # air density from https://www.earthdata.nasa.gov/topics/atmosphere/atmospheric-pressure/air-mass-density#:~:text=Pure%2C%20dry%20air%20has%20a,a%20pressure%20of%20101.325%20kPa.
+  # helium density from https://www.engineeringtoolbox.com/helium-density-specific-weight-temperature-pressure-d_2090.html
+  # nitrogen density from https://www.engineeringtoolbox.com/nitrogen-N2-density-specific-weight-temperature-pressure-d_2039.html
+  # Gas Temperature assumed to be 300K
+  [effective_density]
+    type = ADParsedMaterial
+    property_name = 'rho'
+    coupled_variables = 'w_he'
+    constant_names = 'rho_he rho_air rho_nitrogen rho_oxygen'
+    constant_expressions = '0.1598  1.293 1.126 1.283'
+    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 0.8 + rho_oxygen * 0.2)'
+    block = 'plasma'
+  []
+  # viscosities from https://www.engineeringtoolbox.com/gases-absolute-dynamic-viscosity-d_1888.html
+  # Gas Temperature Assumed to be 20 C
+  [effective_viscosity]
+    type = ADParsedMaterial
+    property_name = 'mu'
+    coupled_variables = 'w_he'
+    constant_names = 'mu_he mu_air mu_nitrogen mu_oxygen'
+    constant_expressions = '1.96e-5 1.82e-5 1.76e-5 2.04e-5'
+    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 0.8 + mu_oxygen * 0.2)'
+    block = 'plasma'
   []
 []
 
