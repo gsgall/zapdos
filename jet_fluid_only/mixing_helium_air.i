@@ -293,7 +293,7 @@ helium_fraction = 0.0000
     type = ParsedFunction
     symbol_names = 'inlet_func inlet_r_end inlet_r_start'
     symbol_values = 'inlet_func inlet_r_end inlet_r_start'
-    expression = 'if (x > inlet_r_start & x < inlet_r_end + 1e-4 & y > 0,
+    expression = 'if (x > inlet_r_start & x < inlet_r_end + 1e-4,
                   1,
                   ${helium_fraction})'
   []
@@ -360,13 +360,13 @@ helium_fraction = 0.0000
 [Executioner]
   type = Transient
   solve_type = NEWTON
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-  petsc_options_value = 'lu NONZERO 1.e-10'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
+  petsc_options_value = 'lu NONZERO 1.e-10 superlu_dists'
   line_search = 'none'
 
   nl_abs_tol = 2e-8
   nl_max_its = 15
-
+  l_tol = 1e-05
   l_max_its = 300
   [TimeStepper]
     type = IterationAdaptiveDT
@@ -376,9 +376,11 @@ helium_fraction = 0.0000
     optimal_iterations = 10
   []
   steady_state_detection = true
-  # steady_state_tolerance = 1e-3
+  # off_diagonals_in_auto_scaling = true
   automatic_scaling = true
   compute_scaling_once = false
+
+  dtmax = 5e-4
 []
 
 [Outputs]
