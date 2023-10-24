@@ -1,4 +1,4 @@
-# pressure = 101325
+pressure = 101325
 helium_fraction = 0.0000
 
 [GlobalParams]
@@ -6,7 +6,7 @@ helium_fraction = 0.0000
 []
 
 [Mesh]
-  file = 'first_order_w/mixing_helium_air_out.e'
+  file = 'single_fluid_with_target_out.e'
   second_order = true
   rz_coord_axis = Y
   coord_type = RZ
@@ -27,13 +27,11 @@ helium_fraction = 0.0000
   []
 
   [lambda]
-    # initial_from_file_var = 'lambda'
     family = SCALAR
     order = FIRST
   []
 
   [w_he]
-    initial_from_file_var = 'w_he'
     order = FIRST
     family = LAGRANGE
     block = 'plasma'
@@ -157,19 +155,19 @@ helium_fraction = 0.0000
     function_z = 'vel_z_ic'
   []
 
-  # [w_he]
-  #   type = FunctionIC
-  #   variable = w_he
-  #   function = w_he_ic
-  #   block = 'plasma'
-  # []
+  [w_he]
+    type = FunctionIC
+    variable = w_he
+    function = w_he_ic
+    block = 'plasma'
+  []
 
-  # [pressure]
-  #   type = ConstantIC
-  #   variable = p
-  #   value = ${pressure}
-  #   block = 'plasma'
-  # []
+  [pressure]
+    type = ConstantIC
+    variable = p
+    value = ${pressure}
+    block = 'plasma'
+  []
 []
 
 [BCs]
@@ -364,7 +362,7 @@ helium_fraction = 0.0000
   solve_type = NEWTON
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
   # petsc_options_value = 'lu NONZERO 1.e-10 superlu_dists'
-  petsc_options_value = 'lu NONZERO 1.e-8 mumps'
+  petsc_options_value = 'lu NONZERO 1.e-9 mumps'
   line_search = 'none'
   # scheme = newmark-beta
   nl_abs_tol = 2e-8
