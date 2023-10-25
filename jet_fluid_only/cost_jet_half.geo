@@ -141,6 +141,8 @@ Point(69) = {(target_width - round_radius), -distance_to_target, 0};
 // fins for transition BCs
 Point(70) = {-(outer_channel_x + fin_width), outer_channel_length + y_buffer, 0};
 Point(71) = {(outer_channel_x + fin_width), outer_channel_length + y_buffer, 0};
+// point for pressure pin
+Point(72) =  {(target_width + x_buffer), -distance_to_target, 0};
 // inlet
 Line(13) = {1, 3};
 Line(211) = {21,1};
@@ -163,7 +165,8 @@ Line(7028) = {70,28};
 // Line(2428) = {24,28};
 // atmosphere right
 Circle(464748) = {46,47,48};
-Line(4849) = {48,49};
+Line(4872) = {48,72};
+Line(7249) = {72,49};
 Circle(495051) = {49,50,51};
 Circle(525354) = {52,53,54};
 // Line(5446) = {54,46};
@@ -195,15 +198,16 @@ Line(698) = {69,8};
 // // // boundaries
 // Physical Line("upper_axis_of_symmetry") = {70,01};
 // Physical Line("lower_axis_of_symmetry") = {87};
+Physical Point("pressure_pin") = {72};
 Physical Line("axis_of_symmetry") = {87,70,01};
 Physical Line("target") = { 495051,5164, 646566,6667,676869,698,843,434445,4540,404142};
-Physical Line("atmosphere") = {4849,4225,252627,2722,222324, 464748,2470,282930,7146};
+Physical Line("atmosphere") = {4872,7249,4225,252627,2722,222324, 464748,2470,282930,7146};
 // Physical Line("upper_atmosphere") = {464748,2470,282930,7146};
 Physical Line("electrode") = {3037,525354,373839,3934,343536,3631,313233,3321,355,555657,5758,585960,6061,616263,6352,7028, 5471};
 Physical Line("inlet") = {211,13};
 // Physical Point("pressure_pin") = {49};
 // // // defining the domain
-Line Loop(200) = {355,555657,5758,585960,6061,616263,6352,525354,5471,7146,464748,4849,495051,5164,646566,6667,676869,698,87,70,01,13};
+Line Loop(200) = {355,555657,5758,585960,6061,616263,6352,525354,5471,7146,464748,4872, 7249,495051,5164,646566,6667,676869,698,87,70,01,13};
 Plane Surface(201) = {200};
 Physical Surface("plasma") = {201};
 

@@ -24,18 +24,18 @@ pressure = 101325
     block = 'plasma'
   []
 
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
+  # [lambda]
+  #   family = SCALAR
+  #   order = FIRST
+  # []
 []
 
 [Kernels]
-  [mean_zero_pressure]
-    type = ScalarLagrangeMultiplier
-    variable = p
-    lambda = lambda
-  []
+  # [mean_zero_pressure]
+  #   type = ScalarLagrangeMultiplier
+  #   variable = p
+  #   lambda = lambda
+  # []
 
   [mass]
     type = INSADMass
@@ -81,14 +81,14 @@ pressure = 101325
   # []
 []
 
-[ScalarKernels]
-  [mean_zero_pressure_lm]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0
-  []
-[]
+# [ScalarKernels]
+#   [mean_zero_pressure_lm]
+#     type = AverageValueConstraint
+#     variable = lambda
+#     pp_name = pressure_integral
+#     value = 0
+#   []
+# []
 
 [AuxVariables]
   [vel_x]
@@ -155,6 +155,14 @@ pressure = 101325
     boundary = 'electrode target'
     function_x = 0
     function_y = 0
+  []
+
+  [pressure_pin]
+    type = DirichletBC
+    variable = p
+    boundary = 'pressure_pin'
+    value = ${pressure}
+    preset = false
   []
 []
 
@@ -247,13 +255,13 @@ pressure = 101325
   []
 []
 
-[Postprocessors]
-  [pressure_integral]
-    type = ElementIntegralVariablePostprocessor
-    variable = p
-    execute_on = linear
-  []
-[]
+# [Postprocessors]
+#   [pressure_integral]
+#     type = ElementIntegralVariablePostprocessor
+#     variable = p
+#     execute_on = linear
+#   []
+# []
 
 [Executioner]
   type = Transient

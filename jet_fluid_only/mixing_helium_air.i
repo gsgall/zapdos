@@ -1,4 +1,4 @@
-# pressure = 101325
+pressure = 101325
 helium_fraction = 0.0000
 
 [GlobalParams]
@@ -6,7 +6,7 @@ helium_fraction = 0.0000
 []
 
 [Mesh]
-  file = 'first_order_w/mixing_helium_air_out.e'
+  file = 'single_fluid_with_target_out.e'
   second_order = true
   rz_coord_axis = Y
   coord_type = RZ
@@ -26,14 +26,14 @@ helium_fraction = 0.0000
     block = 'plasma'
   []
 
-  [lambda]
-    # initial_from_file_var = 'lambda'
-    family = SCALAR
-    order = FIRST
-  []
+  # [lambda]
+  #   # initial_from_file_var = 'lambda'
+  #   family = SCALAR
+  #   order = FIRST
+  # []
 
   [w_he]
-    initial_from_file_var = 'w_he'
+    # initial_from_file_var = 'w_he'
     order = FIRST
     family = LAGRANGE
     block = 'plasma'
@@ -41,6 +41,12 @@ helium_fraction = 0.0000
 []
 
 [Kernels]
+  # [mean_zero_pressure]
+  #   type = ScalarLagrangeMultiplier
+  #   variable = p
+  #   lambda = lambda
+  # []
+
   [w_he_time]
     type = ADTimeDerivative
     variable = w_he
@@ -58,12 +64,6 @@ helium_fraction = 0.0000
     type = ConservativeAdvection
     variable = w_he
     velocity = velocity
-  []
-
-  [mean_zero_pressure]
-    type = ScalarLagrangeMultiplier
-    variable = p
-    lambda = lambda
   []
 
   [mass]
@@ -110,14 +110,14 @@ helium_fraction = 0.0000
   # []
 []
 
-[ScalarKernels]
-  [mean_zero_pressure_lm]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0
-  []
-[]
+# [ScalarKernels]
+#   [mean_zero_pressure_lm]
+#     type = AverageValueConstraint
+#     variable = lambda
+#     pp_name = pressure_integral
+#     value = 0
+#   []
+# []
 
 [AuxVariables]
   [vel_x]
@@ -157,19 +157,12 @@ helium_fraction = 0.0000
     function_z = 'vel_z_ic'
   []
 
-  # [w_he]
-  #   type = FunctionIC
-  #   variable = w_he
-  #   function = w_he_ic
-  #   block = 'plasma'
-  # []
-
-  # [pressure]
-  #   type = ConstantIC
-  #   variable = p
-  #   value = ${pressure}
-  #   block = 'plasma'
-  # []
+  [w_he]
+    type = FunctionIC
+    variable = w_he
+    function = w_he_ic
+    block = 'plasma'
+  []
 []
 
 [BCs]
@@ -210,6 +203,14 @@ helium_fraction = 0.0000
     boundary = 'electrode target'
     function_x = 0
     function_y = 0
+  []
+
+  [pressure_pin]
+    type = DirichletBC
+    variable = p
+    boundary = 'pressure_pin'
+    value = ${pressure}
+    preset = false
   []
 []
 
@@ -351,20 +352,21 @@ helium_fraction = 0.0000
   []
 []
 
-[Postprocessors]
-  [pressure_integral]
-    type = ElementIntegralVariablePostprocessor
-    variable = p
-    execute_on = linear
-  []
-[]
+# [Postprocessors]
+#   [pressure_integral]
+#     type = ElementIntegralVariablePostprocessor
+#     variable = p
+#     execute_on = linear
+#   []
+# []
 
 [Executioner]
   type = Transient
   solve_type = NEWTON
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
-  # petsc_options_value = 'lu NONZERO 1.e-10 superlu_dists'
-  petsc_options_value = 'lu NONZERO 1.e-8 mumps'
+  petsc_options_value = 'lu NONZERO 1.e-10 superlu_dists'
+  # petsc_options_value = 'lu NONZERO 1.e-7 mumps'
+  # petsc_options_value = 'lu NONZERO 1.e-7 strumpack'
   line_search = 'none'
   # scheme = newmark-beta
   nl_abs_tol = 2e-8
@@ -379,16 +381,16 @@ helium_fraction = 0.0000
     optimal_iterations = 10
   []
   steady_state_detection = true
+  steady_state_tolerance = 1e-07
   # off_diagonals_in_auto_scaling = true
   automatic_scaling = true
   compute_scaling_once = false
 
-  # dtmax = 5e-4
+  # dtmax = 1e-3
 []
 
 [Outputs]
   console = true
-  checkpoint = true
   [out]
     type = Exodus
   []
