@@ -32,12 +32,6 @@ pressure = 101325
     block = 'plasma'
   []
 
-  [momentum_time_derivative]
-    type = INSADMomentumTimeDerivative
-    variable = velocity
-    block = 'plasma'
-  []
-
   [momentum_convection]
     type = INSADMomentumAdvection
     variable = velocity
@@ -93,23 +87,6 @@ pressure = 101325
     variable = vel_y
     vector_variable = velocity
     component = 'y'
-  []
-[]
-
-[ICs]
-  [pressure]
-    type = ConstantIC
-    variable = p
-    value = ${pressure}
-    block = 'plasma'
-  []
-
-  [velocity]
-    type = VectorFunctionIC
-    variable = velocity
-    function_x = 0
-    function_y = channel_func
-    block = 'plasma'
   []
 []
 
@@ -236,25 +213,11 @@ pressure = 101325
 []
 
 [Executioner]
-  type = Transient
-  solve_type = NEWTON
+  type = Steady
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount  -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-10 superlu_dists'
-  line_search = 'none'
-
-  nl_abs_tol = 2e-8
-  nl_max_its = 15
-
-  l_max_its = 300
-  [TimeStepper]
-    type = IterationAdaptiveDT
-    cutback_factor = 0.4
-    dt = 1e-8
-    growth_factor = 1.2
-    optimal_iterations = 10
-  []
-  steady_state_detection = true
-  # steady_state_tolerance = 1e-3
+  nl_max_its = 50
+  # nl_rel_tol = 5e-08
   automatic_scaling = true
   compute_scaling_once = false
 []

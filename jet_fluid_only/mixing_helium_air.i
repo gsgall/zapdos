@@ -26,12 +26,6 @@ helium_fraction = 0.0000
     block = 'plasma'
   []
 
-  # [lambda]
-  #   # initial_from_file_var = 'lambda'
-  #   family = SCALAR
-  #   order = FIRST
-  # []
-
   [w_he]
     # initial_from_file_var = 'w_he'
     order = FIRST
@@ -41,12 +35,6 @@ helium_fraction = 0.0000
 []
 
 [Kernels]
-  # [mean_zero_pressure]
-  #   type = ScalarLagrangeMultiplier
-  #   variable = p
-  #   lambda = lambda
-  # []
-
   [w_he_time]
     type = ADTimeDerivative
     variable = w_he
@@ -109,15 +97,6 @@ helium_fraction = 0.0000
   #   gravity = '0 -9.81 0'
   # []
 []
-
-# [ScalarKernels]
-#   [mean_zero_pressure_lm]
-#     type = AverageValueConstraint
-#     variable = lambda
-#     pp_name = pressure_integral
-#     value = 0
-#   []
-# []
 
 [AuxVariables]
   [vel_x]
@@ -352,26 +331,14 @@ helium_fraction = 0.0000
   []
 []
 
-# [Postprocessors]
-#   [pressure_integral]
-#     type = ElementIntegralVariablePostprocessor
-#     variable = p
-#     execute_on = linear
-#   []
-# []
-
 [Executioner]
   type = Transient
   solve_type = NEWTON
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-10 superlu_dists'
-  # petsc_options_value = 'lu NONZERO 1.e-7 mumps'
-  # petsc_options_value = 'lu NONZERO 1.e-7 strumpack'
   line_search = 'none'
-  # scheme = newmark-beta
   nl_abs_tol = 2e-8
   nl_max_its = 15
-  # l_tol = 1e-06
   l_max_its = 300
   [TimeStepper]
     type = IterationAdaptiveDT
@@ -382,11 +349,9 @@ helium_fraction = 0.0000
   []
   steady_state_detection = true
   steady_state_tolerance = 1e-07
-  # off_diagonals_in_auto_scaling = true
   automatic_scaling = true
   compute_scaling_once = false
 
-  # dtmax = 1e-3
 []
 
 [Outputs]
