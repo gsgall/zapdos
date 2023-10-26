@@ -1,0 +1,115 @@
+[Mesh]
+  type = GeneratedMesh
+  dim = 1
+  nx = 8
+  xmin = 0
+  xmax = 1
+[]
+
+[AuxVariables]
+  [velocity]
+    family = LAGRANGE_VEC
+  []
+[]
+
+[AuxKernels]
+  [vel_value]
+    type = ParsedVectorAux
+    variable = velocity
+    expression_x = '1'
+  []
+[]
+
+[Variables]
+  [ion]
+  []
+[]
+
+[Kernels]
+  [ion_time_derivative]
+    type = ElectronTimeDerivative
+    variable = ion
+  []
+  # Diffusion must be added for the sake of numeric stability FEM cannot handle advection all on its own
+  [ion_v_advection]
+    type = BackgroundFluxVector
+    variable = ion
+    velocity = velocity
+  []
+
+  [ion_diffusion]
+    type = CoeffDiffusion
+    variable = ion
+    position_units = 1.0
+  []
+
+  [ion_force]
+    type = BodyForce
+    variable = ion
+    function = ion_force
+  []
+[]
+
+[Functions]
+  [diffion]
+    type = ConstantFunction
+    value = 1.0
+  []
+  [ion_exact]
+    type = ParsedFunction
+    value = 'log(0.25*cos(2*x*pi*t) + 1)'
+  []
+  [ion_force]
+    type = ParsedFunction
+    value = '1.0*pi^2*t^2*cos(2*x*pi*t) - 0.5*pi*t*sin(2*x*pi*t) + (0.25*cos(2*x*pi*t) + 1)*log(0.25*cos(2*x*pi*t) + 1)'
+  []
+
+[]
+
+[BCs]
+  [all]
+    type = FunctionDirichletBC
+    variable = ion
+    function = ion_exact
+    boundary = 'left right'
+  []
+[]
+
+[Materials]
+  [Material_Coeff]
+    type = ADGenericFunctionMaterial
+    prop_names = 'diffion'
+    prop_values = 'diffion'
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 0.0075
+  automatic_scaling = true
+  compute_scaling_once = false
+  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
+  solve_type = NEWTON
+  line_search = none
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
+  petsc_options_value = 'lu NONZERO 1.e-10'
+
+  scheme = bdf2
+[]
+
+[Postprocessors]
+  [error]
+    type = ElementL2Error
+    variable = ion
+    function = ion_exact
+  []
+  [h]
+    type = AverageElementSize
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
