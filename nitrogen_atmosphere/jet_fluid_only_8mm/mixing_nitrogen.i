@@ -373,12 +373,12 @@ helium_fraction = 0.0000
     growth_factor = 1.2
     optimal_iterations = 10
   []
-  end_time = 5.8
+  end_time = 2.7
   steady_state_detection = true
   steady_state_tolerance = 1e-07
   automatic_scaling = true
   compute_scaling_once = false
-  # dtmax = 1e-5
+  # dtmax = 1e-4
 []
 
 [Outputs]
