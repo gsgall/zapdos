@@ -42,7 +42,7 @@
 
 
 [PeriodicControllers]
-  [Shooting]
+  [Periodic]
     Enable_at_cycle_start = 'Postprocessors::periodic_a'
     Enable_at_cycle_end = 'Postprocessors::periodic_a'
     Disable_at_cycle_end = 'Postprocessors::periodic_a'
@@ -50,10 +50,9 @@
     cycle_frequency = 0.1
     cycles_between_controls = 0
     num_controller_set = 2000
-    name = Shooting
+    name = Periodic
   []
 []
-
 
 
 [Executioner]
