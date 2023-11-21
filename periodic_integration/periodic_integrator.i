@@ -41,18 +41,18 @@
 []
 
 
-[PeriodicControllers]
-  [Periodic]
-    Enable_at_cycle_start = 'Postprocessors::periodic_a'
-    Enable_at_cycle_end = 'Postprocessors::periodic_a'
-    Disable_at_cycle_end = 'Postprocessors::periodic_a'
-    starting_cycle = 0
-    cycle_frequency = 0.1
-    cycles_between_controls = 0
-    num_controller_set = 2000
-    name = Periodic
-  []
-[]
+# [PeriodicControllers]
+#   [Periodic]
+#     Enable_at_cycle_start = 'Postprocessors::periodic_a'
+#     Enable_at_cycle_end = 'Postprocessors::periodic_a'
+#     Disable_at_cycle_end = 'Postprocessors::periodic_a'
+#     starting_cycle = 0
+#     cycle_frequency = 0.1
+#     cycles_between_controls = 0
+#     num_controller_set = 2000
+#     name = Periodic
+#   []
+# []
 
 
 [Executioner]
@@ -92,4 +92,5 @@
   [out]
     type = Exodus
   []
+  csv = true
 []

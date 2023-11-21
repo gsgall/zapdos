@@ -9,27 +9,29 @@
 
 #pragma once
 
-#include "TimeIntegratedPostprocessor.h"
+#include "GeneralPostprocessor.h"
 
-/**
- * Integrate a post-processor value over time using trapezoidal rule
- */
-class PeriodicTimeIntegratedPostprocessor : public TimeIntegratedPostprocessor
+
+class FunctionControlPostprocessor : public GeneralPostprocessor
 {
 public:
   static InputParameters validParams();
 
-  PeriodicTimeIntegratedPostprocessor(const InputParameters & parameters);
+  FunctionControlPostprocessor(const InputParameters & parameters);
 
-  // virtual void initialize() override;
+  virtual void initialize() override;
   virtual void execute() override;
-  // using Postprocessor::getValue;
-  // virtual Real getValue() const override;
-
+  using Postprocessor::getValue;
+  virtual Real getValue() const override;
 protected:
 
+  // the value you want _pps_value to be
+  const Real _reff_value;
+  // The current post-processor value
+  const PostprocessorValue & _pps_value;
   const Real _period;
   Real _period_count;
   Real _next_period_start;
+  Real _value;
   Real _previous_dt;
 };
