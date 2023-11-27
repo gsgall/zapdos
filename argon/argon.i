@@ -32,24 +32,26 @@ dom0Scale = 1
 
 [DriftDiffusionAction]
   [Plasma]
-    electrons = em
+    electrons = 'em'
     charged_particle = 'Ar+ Ar_2+'
     Neutrals = Ar*
     mean_energy = mean_en
     potential = potential
     Is_potential_unique = true
     using_offset = true
+    # offset = 30
     position_units = ${dom0Scale}
     Additional_Outputs = 'ElectronTemperature Current EField'
   []
 []
 
 [Reactions]
-  [ZapdosNetwork]
+  [ZapdosRateNetwork]
+    name = 'rate'
     species = 'em Ar* Ar+ Ar_2+'
     aux_species = 'Ar'
     gas_species = 'Ar'
-    reaction_coefficient_format = 'townsend'
+    reaction_coefficient_format = 'rate'
     electron_energy = 'mean_en'
     electron_density = 'em'
     include_electrons = true
@@ -59,18 +61,34 @@ dom0Scale = 1
     use_log = true
     position_units = ${dom0Scale}
     block = 0
+    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic]
+                 em + Ar -> em + Ar*                 : EEDF [-11.5]
+                 em + Ar -> em + em + Ar+            : EEDF [-15.761]
+                 em + Ar* -> em + em + Ar+           : EEDF [-4.30]'
+  []
+
+  [ZapdosTownsendNetwork]
+    name = 'town'
+    species = 'em Ar* Ar+ Ar_2+'
+    aux_species = 'Ar'
+    gas_species = 'Ar'
+    reaction_coefficient_format = 'townsend'
+    electron_energy = 'mean_en'
+    electron_density = 'em'
+    include_electrons = true
+    potential = 'potential'
+    use_ad = true
+    use_log = true
+    position_units = ${dom0Scale}
+    block = 0
     equation_constants = 'Tgas'
     equation_values = '345'
     equation_variables = 'e_temp'
-    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic]
-                 em + Ar -> em + Ar*                 : EEDF [-11.5]
-                 em + Ar -> em + em + Ar+            : EEDF [-1.576e1]
-                 em + Ar* -> em + em + Ar+           : EEDF [-4.30]
-                 Ar_2+ + em -> Ar* + Ar              : {8.5e-7*((e_temp/1.5)*11600/300.0)^(-0.67)}
+    reactions = 'Ar_2+ + em -> Ar* + Ar              : {8.5e-7*((e_temp/1.5)*11600/300.0)^(-0.67)}
                  Ar_2+ + Ar -> Ar+ + Ar + Ar         : {(6.06e-6/Tgas)*exp(-15130.0/Tgas)}
-                 Ar* + Ar* -> Ar_2+ + em             : 6.0e-10
+                 Ar* + Ar* -> Ar_2+ + em             : {6.0e-10}
                  Ar+ + em + em -> Ar + em            : {8.75e-27*((e_temp/1.5)^(-4.5))}
-                 Ar* + Ar + Ar -> Ar + Ar + Ar       : 1.399e-32
+                 Ar* + Ar + Ar -> Ar + Ar + Ar       : {1.399e-32}
                  Ar+ + Ar + Ar -> Ar_2+ + Ar         : {2.25e-31*(Tgas/300.0)^(-0.4)}'
   []
 []
@@ -269,7 +287,7 @@ dom0Scale = 1
 [Functions]
   [potential_bc_func]
     type = ParsedFunction
-    expression = '0.280*cos(2*3.1415926*13.56e6*t)'
+    expression = '0.5*cos(2*3.1415926*13.56e6*t)'
   []
   [potential_ic_func]
     type = ParsedFunction
