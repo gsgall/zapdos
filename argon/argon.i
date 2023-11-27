@@ -96,6 +96,30 @@ dom0Scale = 1
 [AuxVariables]
   [Ar]
   []
+
+  [e_power]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  []
+
+  [Ar_ion_power]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  []
+
+  [Ar_2_ion_power]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  []
+
+  [total_power]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  []
 []
 
 [AuxKernels]
@@ -105,6 +129,46 @@ dom0Scale = 1
     # value = 2.4463141e25
     value = 3.7043332
     execute_on = INITIAL
+  []
+
+  [em_powerdep]
+    type = ADPowerDep
+    variable = e_power
+    density_log = em
+    potential = potential
+    art_diff = false
+    potential_units = kV
+    position_units = ${dom0Scale}
+    block = 0
+  []
+
+  [Ar+_powerdep]
+    type = ADPowerDep
+    variable = Ar_ion_power
+    density_log = Ar+
+    potential = potential
+    art_diff = false
+    potential_units = kV
+    position_units = ${dom0Scale}
+    block = 0
+  []
+
+  [Ar_2+_powerdep]
+    type = ADPowerDep
+    variable = Ar_2_ion_power
+    density_log = Ar_2+
+    potential = potential
+    art_diff = false
+    potential_units = kV
+    position_units = ${dom0Scale}
+    block = 0
+  []
+
+  [total_powerdep]
+    type = ParsedAux
+    variable = total_power
+    coupled_variables = 'e_power Ar_ion_power Ar_2_ion_power'
+    expression = 'e_power + Ar_ion_power + Ar_2_ion_power'
   []
 []
 
@@ -223,29 +287,31 @@ dom0Scale = 1
     position_units = ${dom0Scale}
   []
 
-  [mean_en_physical_right]
-    type = HagelaarEnergyAdvectionBC
+  [./mean_en_physical_right]
+    # type = HagelaarEnergyBC
+    type = EnergyBC2
     variable = mean_en
     boundary = 'right'
-    position_units = 1
     potential = potential
+    em = em
     ip = Ar+
+    args = 'Ar+ Ar_2+'
     r = 0
-    # em = em
-    # args = 'Ar+ Ar_2+'
-  []
-  [mean_en_physical_left]
-    type = HagelaarEnergyAdvectionBC
+    position_units = ${dom0Scale}
+  [../]
+  [./mean_en_physical_left]
+    # type = HagelaarEnergyBC
+    type = EnergyBC2
     variable = mean_en
-    # time_units = 1
     boundary = 'left'
-    position_units = 1
     potential = potential
+    em = em
     ip = Ar+
+    args = 'Ar+ Ar_2+'
     r = 0
-    # em = em
-    # args = 'Ar+ Ar_2+'
-  []
+    position_units = ${dom0Scale}
+  [../]
+
 
 []
 
@@ -347,6 +413,35 @@ dom0Scale = 1
   []
 []
 
+
+[PeriodicControllers]
+  [Periods]
+    Enable_at_cycle_start = 'Postprocessors::integrated_power'
+    Enable_at_cycle_end = 'Postprocessors::integrated_power'
+    Disable_at_cycle_end = 'Postprocessors::integrated_power'
+    starting_cycle = 0
+    cycle_frequency = 13.56e6
+    cycles_between_controls = 0
+    num_controller_set = 2000
+    name = Periods
+  []
+[]
+
+[Postprocessors]
+  [integrated_power]
+    type = ElementIntegralVariablePostprocessor
+    variable = total_power
+    execute_on = 'initial timestep_end'
+  []
+
+  [periodic_power]
+    type = PeriodicTimeIntegratedPostprocessor
+    value = integrated_power
+    cycle_frequency = 13.56e6
+    execute_on = 'initial timestep_end'
+  []
+[]
+
 [Executioner]
   type = Transient
   end_time = 1e-3
@@ -373,4 +468,5 @@ dom0Scale = 1
   [out]
     type = Exodus
   []
+  csv = true
 []
