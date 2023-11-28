@@ -44,21 +44,18 @@
 
 
 [PeriodicControllers]
-  [Shooting]
-    Enable_at_cycle_start = 'Postprocessors::a'
-    Enable_at_cycle_end = 'Postprocessors::a'
-    Disable_at_cycle_end = 'Postprocessors::a'
+  [period]
+    name = period
     starting_cycle = 0
     cycle_frequency = 0.1
     cycles_between_controls = 0
     num_controller_set = 2000
-    name = Shooting
   []
 []
 
 [Executioner]
   type = Transient
-  end_time = 100.5
+  end_time = 30.5
   dt = 0.5
   petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
@@ -74,9 +71,17 @@
     execute_on = 'initial timestep_end'
   []
 
+
+  [mean_a]
+    type = MultiplicationPostprocessor
+    value = a
+    coeff = 0.1
+    execute_on = 'timestep_end'
+  []
+
   [periodic_a]
     type = PeriodicTimeIntegratedPostprocessor
-    value = a
+    value = mean_a
     cycle_frequency = 0.1
     execute_on = 'initial timestep_end'
   []
@@ -84,19 +89,15 @@
 
   [mag]
     type = FunctionControlPostprocessor
+    value = periodic_a
+    cycle_frequency = 0.1
     initial_value = -4
     reference_value = 10
-    value = mean_a
-    cycle_frequency = 0.1
-    execute_on = 'timestep_end'
+    # start_cycle = 3
+    cycles_between_modification = 1
+    execute_on = 'initial timestep_end'
   []
 
-  [mean_a]
-    type = MultiplicationPostprocessor
-    value = periodic_a
-    coeff = 0.1
-    execute_on = 'timestep_end'
-  []
 []
 
 [Outputs]

@@ -27,11 +27,16 @@ protected:
 
   // the value you want _pps_value to be
   const Real _reff_value;
-  // The current post-processor value
-  const PostprocessorValue & _pps_value;
+  const Real _start_cycle;
+  const Real _cycles_between;
+  // the previous post processor value
+  // using this since we intend to use this with a periodic integrateor
+  // and that sets the value to 0 on the start of a new cycle
+  const PostprocessorValue & _pps_value_old;
   const Real _period;
   Real _period_count;
   Real _next_period_start;
+  Real _next_modification_start;
   Real _value;
   Real _previous_dt;
 };

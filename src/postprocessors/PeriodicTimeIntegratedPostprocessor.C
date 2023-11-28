@@ -24,38 +24,22 @@ PeriodicTimeIntegratedPostprocessor::PeriodicTimeIntegratedPostprocessor(const I
   : TimeIntegratedPostprocessor(parameters),
     _period(1.0 / getParam<Real>("cycle_frequency")),
     _period_count(0),
-    _next_period_start(_period),
-    _previous_dt(0)
+    _next_period_start(_period)
 {
 }
 
-// void
-// PeriodicTimeIntegratedPostprocessor::initialize()
-// {
-
-// }
 
 void
 PeriodicTimeIntegratedPostprocessor::execute()
 {
   // offset by 1 timestep so that we get the full value at the
   // actual period end
-
-  if (_t - _previous_dt >= _next_period_start)
+  TimeIntegratedPostprocessor::execute();
+  if (_t >= _next_period_start)
   {
     _period_count += 1;
     _next_period_start = (_period_count + 1) * _period;
     this->_value = 0;
-    _previous_dt = _dt;
     return;
   }
-  _previous_dt = _dt;
-  TimeIntegratedPostprocessor::execute();
-
 }
-
-// Real
-// PeriodicTimeIntegratedPostprocessor::getValue() const
-// {
-//   return _value;
-// }

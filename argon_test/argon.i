@@ -345,6 +345,9 @@
 
 [PeriodicControllers]
   [Periods]
+    Enable_at_cycle_start = 'Postprocessors::integrated_power'
+    Enable_at_cycle_end = 'Postprocessors::integrated_power'
+    Disable_at_cycle_end = 'Postprocessors::integrated_power'
     starting_cycle = 0
     cycles_between_controls = 0
     num_controller_set = 2000
@@ -365,12 +368,12 @@
     execute_on = 'initial timestep_end'
   []
 
-  # [power_dep]
-  #   type = MultiplicationPostprocessor
-  #   value = periodic_power
-  #   # 30 mm length by 1 mm depth
-  #   coeff = '30e-6'
-  # []
+  [power_dep]
+    type = MultiplicationPostprocessor
+    value = periodic_power
+    # 30 mm length by 1 mm depth
+    coeff = '30e-6'
+  []
 []
 
 [Executioner]

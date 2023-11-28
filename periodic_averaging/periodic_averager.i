@@ -57,8 +57,8 @@
 
 [Executioner]
   type = Transient
-  end_time = 30
-  dt = 1e-1
+  end_time = 50
+  dt = 1e-2
   petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
   petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'

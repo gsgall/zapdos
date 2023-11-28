@@ -21,15 +21,11 @@ public:
 
   PeriodicTimeIntegratedPostprocessor(const InputParameters & parameters);
 
-  // virtual void initialize() override;
   virtual void execute() override;
-  // using Postprocessor::getValue;
-  // virtual Real getValue() const override;
 
 protected:
 
   const Real _period;
   Real _period_count;
   Real _next_period_start;
-  Real _previous_dt;
 };
