@@ -60,10 +60,11 @@
     reaction_coefficient_format = 'rate'
     include_electrons = true
     file_location = 'reactions'
-    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic]
-                 em + Ar -> em + Ar*                 : EEDF [-11.5]
-                 em + Ar -> em + em + Ar+            : EEDF [-15.761]
-                 em + Ar* -> em + em + Ar+           : EEDF [-4.30]'
+    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic] (ar_elastic.txt)
+                 em + Ar -> em + Ar*                 : EEDF [-11.5] (ar_excitation.txt)
+                 em + Ar* -> em + Ar                 : EEDF [11.5] (ar_deexcitation.txt)
+                 em + Ar -> em + em + Ar+            : EEDF [-15.761] (ar_ionization.txt)
+                 em + Ar* -> em + em + Ar+           : EEDF [-4.30] (ar_excited_ionization.txt)'
   []
 
   [ZapdosTownsendNetwork]
@@ -284,11 +285,13 @@
 [Functions]
   [potential_bc_func]
     type = ParsedFunction
-    expression = '0.28*cos(2*3.1415926*13.56e6*t)'
+    symbol_names = 'voltage f'
+    symbol_values = 'voltage 13.56e6'
+    expression = 'voltage * cos(2*pi*f*t) '
   []
   [potential_ic_func]
     type = ParsedFunction
-    expression = '0.2*cos(0)'
+    expression = '0.2'
   []
 []
 
@@ -365,12 +368,24 @@
     execute_on = 'initial timestep_end'
   []
 
-  # [power_dep]
-  #   type = MultiplicationPostprocessor
-  #   value = periodic_power
-  #   # 30 mm length by 1 mm depth
-  #   coeff = '30e-6'
-  # []
+  [mean_periodic_power_dep]
+    type = MultiplicationPostprocessor
+    value = periodic_power
+    # coeff is 30e-3 * 1e-3 * 13.56e6
+    #  30e-3 * 1e-3  multiplied for the remaining area of the jet
+    # 13.56e6 multipilied to take the periodic average
+    coeff = '406.8'
+  []
+
+  [voltage]
+    type = FunctionControlPostprocessor
+    value = mean_periodic_power_dep
+    initial_value = 0.28
+    reference_value = 0.1
+    start_cycle = 1e7
+    # cycles_between_modification = 0
+    execute_on = 'initial timestep_end'
+  []
 []
 
 [Executioner]
