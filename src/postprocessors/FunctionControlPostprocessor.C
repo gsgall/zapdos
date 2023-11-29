@@ -56,7 +56,6 @@ FunctionControlPostprocessor::execute()
 
   if (_t >= _next_modification_start)
   {
-    std::cout << "Updating value" << std::endl;
     _next_modification_start = (_period_count + _cycles_between + 1) * _period;
     this->_value = this->_value * _reff_value / _pps_value_old;
   }

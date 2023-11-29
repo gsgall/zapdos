@@ -32,8 +32,6 @@ PeriodicTimeIntegratedPostprocessor::PeriodicTimeIntegratedPostprocessor(const I
 void
 PeriodicTimeIntegratedPostprocessor::execute()
 {
-  // offset by 1 timestep so that we get the full value at the
-  // actual period end
   TimeIntegratedPostprocessor::execute();
   if (_t >= _next_period_start)
   {
