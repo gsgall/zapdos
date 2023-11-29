@@ -43,7 +43,7 @@
 [DriftDiffusionAction]
   [Plasma]
     electrons = 'em'
-    charged_particle = 'Ar+ Ar_2+'
+    charged_particle = 'Ar+'
     Neutrals = 'Ar*'
     Is_potential_unique = true
     using_offset = true
@@ -54,35 +54,40 @@
 [Reactions]
   [ZapdosRateNetwork]
     name = 'rate'
-    species = 'em Ar* Ar+ Ar_2+'
+    species = 'em Ar* Ar+'
     aux_species = 'Ar'
     gas_species = 'Ar'
     reaction_coefficient_format = 'rate'
     include_electrons = true
     file_location = 'reactions'
-    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic]
-                 em + Ar -> em + Ar*                 : EEDF [-11.5]
-                 em + Ar -> em + em + Ar+            : EEDF [-15.761]
-                 em + Ar* -> em + em + Ar+           : EEDF [-4.30]'
+    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic] (ar_elastic.txt)
+                 em + Ar -> em + Ar*                 : EEDF [-11.5] (ar_excitation.txt)
+                 em + Ar* -> em + Ar                 : EEDF [11.5] (ar_deexcitation.txt)
+                 em + Ar -> em + em + Ar+            : EEDF [-15.761] (ar_ionization.txt)
+                 em + Ar* -> em + em + Ar+           : EEDF [-4.30] (ar_excited_ionization.txt)
+                 em + Ar* -> em + Ar_r               : 1.2044e11
+                 Ar* + Ar* -> Ar+ + Ar + em          : 373364000
+                 Ar* + Ar -> Ar + Ar                 : 1806.6
+                 Ar* + Ar + Ar -> Ar_2 + Ar          : 398909.324'
   []
 
-  [ZapdosTownsendNetwork]
-    name = 'town'
-    species = 'em Ar* Ar+ Ar_2+'
-    aux_species = 'Ar'
-    gas_species = 'Ar'
-    reaction_coefficient_format = 'townsend'
-    include_electrons = true
-    equation_constants = 'Tgas'
-    equation_values = '345'
-    equation_variables = 'e_temp'
-    reactions = 'Ar_2+ + em -> Ar* + Ar              : {8.5e-7*((e_temp/1.5)*11600/300.0)^(-0.67)}
-                 Ar_2+ + Ar -> Ar+ + Ar + Ar         : {(6.06e-6/Tgas)*exp(-15130.0/Tgas)}
-                 Ar* + Ar* -> Ar_2+ + em             : {6.0e-10}
-                 Ar+ + em + em -> Ar + em            : {8.75e-27*((e_temp/1.5)^(-4.5))}
-                 Ar* + Ar + Ar -> Ar + Ar + Ar       : {1.399e-32}
-                 Ar+ + Ar + Ar -> Ar_2+ + Ar         : {2.25e-31*(Tgas/300.0)^(-0.4)}'
-  []
+  # [ZapdosTownsendNetwork]
+  #   name = 'town'
+  #   species = 'em Ar* Ar+ Ar_2+'
+  #   aux_species = 'Ar'
+  #   gas_species = 'Ar'
+  #   reaction_coefficient_format = 'townsend'
+  #   include_electrons = true
+  #   equation_constants = 'Tgas'
+  #   equation_values = '345'
+  #   equation_variables = 'e_temp'
+  #   reactions = 'Ar_2+ + em -> Ar* + Ar              : {8.5e-7*((e_temp/1.5)*11600/300.0)^(-0.67)}
+  #                Ar_2+ + Ar -> Ar+ + Ar + Ar         : {(6.06e-6/Tgas)*exp(-15130.0/Tgas)}
+  #                Ar* + Ar* -> Ar_2+ + em             : {6.0e-10}
+  #                Ar+ + em + em -> Ar + em            : {8.75e-27*((e_temp/1.5)^(-4.5))}
+  #                Ar* + Ar + Ar -> Ar + Ar + Ar       : {1.399e-32}
+  #                Ar+ + Ar + Ar -> Ar_2+ + Ar         : {2.25e-31*(Tgas/300.0)^(-0.4)}'
+  # []
 []
 
 [AuxVariables]
@@ -131,17 +136,17 @@
     density_log = Ar+
   []
 
-  [Ar_2+_powerdep]
-    type = ADPowerDep
-    variable = Ar_2_ion_power
-    density_log = Ar_2+
-  []
+  # [Ar_2+_powerdep]
+  #   type = ADPowerDep
+  #   variable = Ar_2_ion_power
+  #   density_log = Ar_2+
+  # []
 
   [total_powerdep]
     type = ParsedAux
     variable = total_power
-    coupled_variables = 'e_power Ar_ion_power Ar_2_ion_power'
-    expression = 'e_power + Ar_ion_power + Ar_2_ion_power'
+    coupled_variables = 'e_power Ar_ion_power'
+    expression = 'e_power + Ar_ion_power'
   []
 []
 
@@ -151,7 +156,6 @@
     variable = potential
     boundary = 'left'
     function = potential_bc_func
-    preset = false
   []
 
   [potential_dirichlet_right]
@@ -159,7 +163,6 @@
     variable = potential
     boundary = 'right'
     value = 0
-    preset = false
   []
 
   [em_physical_right]
@@ -209,34 +212,34 @@
     boundary = 'left'
   []
 
-  [Ar_2+_physical_right_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar_2+
-    boundary = 'right'
-  []
-  [Ar_2+_physical_right_advection]
-    type = HagelaarIonAdvectionBC
-    variable = Ar_2+
-    boundary = 'right'
-  []
+  # [Ar_2+_physical_right_diffusion]
+  #   type = HagelaarIonDiffusionBC
+  #   variable = Ar_2+
+  #   boundary = 'right'
+  # []
+  # [Ar_2+_physical_right_advection]
+  #   type = HagelaarIonAdvectionBC
+  #   variable = Ar_2+
+  #   boundary = 'right'
+  # []
 
-  [Ar_2+_physical_left_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar_2+
-    boundary = 'left'
-  []
-  [Ar_2+_physical_left_advection]
-    type = HagelaarIonAdvectionBC
-    variable = Ar_2+
-    boundary = 'left'
-  []
+  # [Ar_2+_physical_left_diffusion]
+  #   type = HagelaarIonDiffusionBC
+  #   variable = Ar_2+
+  #   boundary = 'left'
+  # []
+  # [Ar_2+_physical_left_advection]
+  #   type = HagelaarIonAdvectionBC
+  #   variable = Ar_2+
+  #   boundary = 'left'
+  # []
 
   [mean_en_physical_right]
     type = EnergyBC2
     variable = mean_en
     boundary = 'right'
     ip = Ar+
-    args = 'Ar+ Ar_2+'
+    args = 'Ar+'
   []
 
   [mean_en_physical_left]
@@ -244,7 +247,7 @@
     variable = mean_en
     boundary = 'left'
     ip = Ar+
-    args = 'Ar+ Ar_2+'
+    args = 'Ar+'
   []
 []
 
@@ -264,11 +267,11 @@
     variable = Ar*
     value = -21
   []
-  [Ar_2+_ic]
-    type = ConstantIC
-    variable = Ar_2+
-    value = -24
-  []
+  # [Ar_2+_ic]
+  #   type = ConstantIC
+  #   variable = Ar_2+
+  #   value = -24
+  # []
 
   [mean_en_ic]
     type = ConstantIC
@@ -288,12 +291,65 @@
     type = ParsedFunction
     symbol_names = 'voltage f'
     symbol_values = 'voltage 13.56e6'
-    expression = 'voltage * sin(2*pi*f*t) '
+    expression = 'voltage * cos(2*pi*f*t) '
   []
-
   [potential_ic_func]
     type = ParsedFunction
-    expression = '0.14'
+    expression = '0.2'
+  []
+[]
+
+[Materials]
+  [GasBasics]
+    type = GasElectronMoments
+    interp_trans_coeffs = false
+    interp_elastic_coeff = false
+    ramp_trans_coeffs = false
+    user_p_gas = 1.01325e5
+    # user_p_gas = 133.322
+    # pressure_dependent_electron_coeff = true
+    user_se_coeff = 0
+    # user_electron_mobility = 0.0395
+    # user_electron_diffusion_coeff = 0.15763
+    property_tables_file = reactions/electron_moments_test.txt
+  []
+
+  [gas_species_0]
+    type = ADHeavySpecies
+    heavy_species_name = Ar+
+    heavy_species_mass = 6.64e-26
+    heavy_species_charge = 1.0
+  []
+  [gas_species_1]
+    type = ADHeavySpecies
+    heavy_species_name = Ar*
+    heavy_species_mass = 6.64e-26
+    heavy_species_charge = 0.0
+  []
+  # [gas_species_4]
+  #   type = ADHeavySpecies
+  #   heavy_species_name = Ar_2+
+  #   heavy_species_mass = 1.32670418e-25
+  #   heavy_species_charge = 1.0
+  # []
+  [gas_species_7]
+    type = ADHeavySpecies
+    heavy_species_name = Ar
+    heavy_species_mass = 6.64e-26
+    heavy_species_charge = 0.0
+  []
+[]
+
+[Preconditioning]
+  active = 'smp'
+  [smp]
+    type = SMP
+    full = true
+  []
+
+  [fdp]
+    type = FDP
+    full = true
   []
 []
 
@@ -332,85 +388,27 @@
   [voltage]
     type = FunctionControlPostprocessor
     value = mean_periodic_power_dep
-    initial_value = 0.24
+    initial_value = 0.28
     reference_value = 0.1
     start_cycle = 1e7
+    # cycles_between_modification = 0
     execute_on = 'initial timestep_end'
   []
 []
 
-[Materials]
-  [GasBasics]
-    type = GasElectronMoments
-    interp_trans_coeffs = false
-    interp_elastic_coeff = false
-    ramp_trans_coeffs = false
-    user_p_gas = 1.01325e5
-    user_se_coeff = 0
-    user_electron_mobility = 0.0352103411399
-    user_electron_diffusion_coeff = 0.297951680159
-    property_tables_file = reactions/electron_moments_new.txt
-  []
-
-  [gas_species_0]
-    type = ADHeavySpecies
-    heavy_species_name = Ar+
-    heavy_species_mass = 6.64e-26
-    heavy_species_charge = 1.0
-
-  []
-  [gas_species_1]
-    type = ADHeavySpecies
-    heavy_species_name = Ar*
-    heavy_species_mass = 6.64e-26
-    heavy_species_charge = 0.0
-  []
-  [gas_species_4]
-    type = ADHeavySpecies
-    heavy_species_name = Ar_2+
-    heavy_species_mass = 1.32670418e-25
-    heavy_species_charge = 1.0
-  []
-  [gas_species_7]
-    type = ADHeavySpecies
-    heavy_species_name = Ar
-    heavy_species_mass = 6.64e-26
-    heavy_species_charge = 0.0
-  []
-[]
-
-[Preconditioning]
-  active = 'smp'
-  [smp]
-    type = SMP
-    full = true
-  []
-
-  [fdp]
-    type = FDP
-    full = true
-  []
-[]
-
-
-
 [Executioner]
   type = Transient
-  end_time = 1e-4
+  end_time = 1e-3
   dtmax = 3.7e-9
   solve_type = NEWTON
   line_search = none
   petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3 superlu_dists'
-  # scheme = 'bdf2'
   nl_rel_tol = 1e-4
   nl_abs_tol = 7.6e-5
   dtmin = 1e-14
   l_max_its = 20
-
-  automatic_scaling = true
-  compute_scaling_once = false
 
   [TimeStepper]
     type = IterationAdaptiveDT
