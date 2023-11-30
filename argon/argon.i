@@ -59,9 +59,10 @@
     gas_species = 'Ar'
     reaction_coefficient_format = 'rate'
     include_electrons = true
-    file_location = 'reactions'
+    file_location = 'old_reactions'
     reactions = 'em + Ar -> em + Ar                  : EEDF [elastic]
                  em + Ar -> em + Ar*                 : EEDF [-11.5]
+                 em + Ar* -> em + Ar                 : EEDF [11.5]
                  em + Ar -> em + em + Ar+            : EEDF [-15.761]
                  em + Ar* -> em + em + Ar+           : EEDF [-4.30]'
   []
@@ -332,7 +333,7 @@
   [voltage]
     type = FunctionControlPostprocessor
     value = mean_periodic_power_dep
-    initial_value = 0.24
+    initial_value = 0.5
     reference_value = 0.1
     start_cycle = 1e7
     execute_on = 'initial timestep_end'
