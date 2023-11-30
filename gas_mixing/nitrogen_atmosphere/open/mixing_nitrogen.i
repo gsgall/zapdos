@@ -123,9 +123,9 @@ helium_fraction = 0.0000
   []
 []
 
-[Debug]
-  show_var_residual_norms = true
-[]
+# [Debug]
+#   show_var_residual_norms = true
+# []
 
 [AuxVariables]
   [vel_x]
@@ -187,7 +187,7 @@ helium_fraction = 0.0000
   [w_he_atmosphere]
     type = DirichletBC
     variable = w_he
-    boundary = 'upper_atmosphere atmosphere'
+    boundary = 'atmosphere'
     value = ${helium_fraction}
     preset = false
   []
@@ -211,23 +211,15 @@ helium_fraction = 0.0000
     type = INSADMomentumNoBCBC
     variable = velocity
     pressure = p
-    boundary = 'axis_of_symmetry target'
+    boundary = 'axis_of_symmetry target '
   []
 
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode upper_atmosphere atmosphere'
+    boundary = 'electrode atmosphere upper_atmosphere'
     function_x = 0
     function_y = 0
-  []
-
-  [pressure_pin]
-    type = DirichletBC
-    variable = p
-    boundary = 'upper_atmosphere'
-    value = 0
-    preset = false
   []
 []
 
@@ -378,7 +370,6 @@ helium_fraction = 0.0000
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-9 superlu_dists'
   line_search = 'none'
-  # nl_abs_tol = 2e-8
   nl_max_its = 15
   l_max_its = 300
   [TimeStepper]
@@ -388,9 +379,10 @@ helium_fraction = 0.0000
     growth_factor = 1.2
     optimal_iterations = 10
   []
-  end_time = 1e-2
+  scheme = 'bdf2'
+  # end_time = 1e-2
   steady_state_detection = true
-  steady_state_tolerance = 1e-07
+  steady_state_tolerance = 1e-5
   automatic_scaling = true
   compute_scaling_once = false
   # dtmax = 1e-5

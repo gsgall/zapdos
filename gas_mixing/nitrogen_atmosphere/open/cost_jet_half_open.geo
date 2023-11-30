@@ -28,7 +28,7 @@ target_width = 1 * inch_to_m;
 target_height = 4 * mm_to_m;
 
 // atmosphere for ample mixing space
-x_buffer = 40 * mm_to_m;
+x_buffer = 15 * mm_to_m;
 y_buffer = 0 * mm_to_m;
 // rounding corners that break simulations
 round_radius = 0.09* mm_to_m;
@@ -42,7 +42,7 @@ electrode_lower_center_offset_y1 = -0.08 * mm_to_m;
 electrode_upper_center_offset_x = -0.002 * mm_to_m;
 electrode_upper_center_offset_y = 0 * mm_to_m;
 // fins on the side of easier transition from no-slip to natural
-fin_width = 10 * mm_to_m;
+fin_width = 20 * mm_to_m;
 // axis of symmetry
 Point(0) = {0, 0, 0};
 Point(1) = {0, inner_channel_length, 0};
@@ -110,8 +110,8 @@ Line(518) = {51,8};
 // Physical Point("pressure_pin") = {8};
 Physical Line("axis_of_symmetry") = {87,70,01};
 Physical Line("target") = {518};
-Physical Line("upper_atmosphere") = {5446, 464748,  495051};
-Physical Line("atmosphere") = {4849,4225,252627,2722,222324,2470,282930};
+Physical Line("upper_atmosphere") = {5446, 464748};
+Physical Line("atmosphere") = {4849,4225,252627,2722,222324,2470,282930,  495051};
 // Physical Line("upper_atmosphere") = {464748,2470,282930,7146};
 Physical Line("electrode") = {355,555657,5758,585960,6061,616263, 6352, 525354};
 Physical Line("inlet") = {211,13};
@@ -125,8 +125,8 @@ Physical Surface("plasma") = {201};
 // add refinements
 max = 8e-1 * mm_to_m;
 channel = 1 / 7;
-electrode = 1 / 6;
-corner = 1/7;
+electrode = 1 / 4;
+corner = 1/4 ;
 box_width =  1 * mm_to_m;
 // inner channel refinement
 Field[1] = Box;
@@ -134,30 +134,40 @@ Field[1].VIn = max * channel;
 Field[1].VOut = max;
 Field[1].XMin = -inner_channel_start_x;
 Field[1].XMax = inner_channel_start_x;
-Field[1].YMin =  -distance_to_target;
+Field[1].YMin =  0;
 Field[1].YMax = inner_channel_length;
 Field[1].Thickness = 4 * mm_to_m;
 // // electrode refinement
 Field[2] = Box;
-Field[2].VIn = max * channel ;
+Field[2].VIn = max * electrode ;
 Field[2].VOut = max;
 Field[2].XMin = 0;
-Field[2].XMax = (fin_width / 4);
+Field[2].XMax = (fin_width / 3);
 Field[2].YMin = -distance_to_target + 2e-3*mm_to_m;
 Field[2].YMax = 0;
 Field[2].Thickness = 20 * mm_to_m;
 // electrode refinement
 Field[3] = Box;
-Field[3].VIn = max * channel / 3;
+Field[3].VIn = max * electrode;
 Field[3].VOut = max;
 Field[3].XMin = 0;
 Field[3].XMax = (fin_width / 4);
 Field[3].YMin = -distance_to_target;
 Field[3].YMax = -distance_to_target + 2e-3*mm_to_m;
 Field[3].Thickness = 20 * mm_to_m;
+// upper atomsphere refinement
+
+Field[4] = Box;
+Field[4].VIn = max * corner;
+Field[4].VOut = max;
+Field[4].XMin = outer_channel_x;
+Field[4].XMax = (fin_width);
+Field[4].YMin = outer_channel_length + y_buffer - box_width;
+Field[4].YMax = outer_channel_length + y_buffer;
+Field[4].Thickness = 20 * mm_to_m;
 
 Field[20] = Min;
-Field[20].FieldsList = {1, 2, 3};
+Field[20].FieldsList = {1, 2, 3, 4};
 Background Field = 20;
 
 Mesh.ElementOrder = 2;

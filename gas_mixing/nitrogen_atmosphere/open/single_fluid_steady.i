@@ -59,6 +59,18 @@
     pressure = p
     block = 'plasma'
   []
+
+  [supg]
+    type = INSADMomentumSUPG
+    variable = velocity
+    velocity = velocity
+    block = 'plasma'
+  []
+
+  [pspg]
+    type = INSADMassPSPG
+    variable = p
+  []
 []
 
 [ScalarKernels]
@@ -111,13 +123,13 @@
     type = INSADMomentumNoBCBC
     variable = velocity
     pressure = p
-    boundary = 'axis_of_symmetry target'
+    boundary = 'axis_of_symmetry target '
   []
 
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode upper_atmosphere atmosphere'
+    boundary = 'electrode atmosphere upper_atmosphere'
     function_x = 0
     function_y = 0
   []
@@ -219,10 +231,11 @@
   []
 
   [ins_mat]
-    type = INSADMaterial
+    type = INSADTauMaterial
     velocity = velocity
     pressure = p
     block = 'plasma'
+    alpha = 1
   []
 []
 
@@ -244,10 +257,11 @@
 
 [Executioner]
   type = Steady
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount'
-  petsc_options_value = 'lu NONZERO 1.e-10'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
+  petsc_options_value = 'lu NONZERO 1.e-9 superlu_dists'
+  # line_search = none
   nl_max_its = 50
-  # nl_rel_tol = 5e-08
+  nl_rel_tol = 5e-08
   automatic_scaling = true
 []
 
