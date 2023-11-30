@@ -302,15 +302,14 @@
 [Materials]
   [GasBasics]
     type = GasElectronMoments
-    interp_trans_coeffs = false
+    interp_trans_coeffs = true
     interp_elastic_coeff = false
     ramp_trans_coeffs = false
     user_p_gas = 1.01325e5
-    # user_p_gas = 133.322
-    # pressure_dependent_electron_coeff = true
     user_se_coeff = 0
-    # user_electron_mobility = 0.0395
-    # user_electron_diffusion_coeff = 0.15763
+    # user_electron_mobility = 0.0352103411399
+    # user_electron_diffusion_coeff = 0.297951680159
+    pressure_dependent_electron_coeff = false
     property_tables_file = reactions/electron_moments_test.txt
   []
 
