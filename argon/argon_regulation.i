@@ -10,7 +10,7 @@ dom0Scale = 25.4e-3
 [Mesh]
   [geo]
     type = FileMeshGenerator
-    file = 'argon_base_out.e'
+    file = 'base_case/argon_base_out.e'
   []
   [left]
     type = SideSetsFromNormalsGenerator
@@ -217,7 +217,7 @@ dom0Scale = 25.4e-3
 [UserObjects]
   [exo_soln]
     type = SolutionUserObject
-    mesh = 'argon_base_out.e'
+    mesh = 'base_case/argon_base_out.e'
     system_variables = 'em Ar+ Ar* mean_en potential'
     timestep = LATEST
   []
@@ -401,7 +401,8 @@ dom0Scale = 25.4e-3
 
 [Executioner]
   type = Transient
-  end_time = 7.3746e-5
+  # end_time = 7.3746e-5
+  end_time = 3e-9
   dt = 1e-9
   dtmin = 1e-14
   scheme = bdf2
@@ -420,5 +421,9 @@ dom0Scale = 25.4e-3
   [out]
     type = Exodus
   []
-  csv = true
+
+  [csv_out]
+    type = CSV
+    # csv = true
+  []
 []
