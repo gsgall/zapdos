@@ -11,7 +11,6 @@
 
 #include "GeneralPostprocessor.h"
 
-
 class FunctionControlPostprocessor : public GeneralPostprocessor
 {
 public:
@@ -21,10 +20,9 @@ public:
 
   virtual void initialize() override;
   virtual void execute() override;
-  xs
   virtual Real getValue() const override;
-protected:
 
+protected:
   // the value you want _pps_value to be
   const Real _reff_value;
   const Real _start_cycle;
