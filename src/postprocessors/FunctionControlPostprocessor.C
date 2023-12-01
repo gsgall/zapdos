@@ -30,7 +30,7 @@ FunctionControlPostprocessor::FunctionControlPostprocessor(const InputParameters
   _reff_value(getParam<Real>("reference_value")),
   _start_cycle(getParam<Real>("start_cycle")),
   _cycles_between(getParam<Real>("cycles_between_modification")),
-  _pps_value_old(getPostprocessorValueOld("value")),
+  _pps_value(getPostprocessorValue("value")),
   _period(1.0 / getParam<Real>("cycle_frequency")),
   _period_count(0),
   _value(getParam<Real>("initial_value"))
@@ -57,7 +57,7 @@ FunctionControlPostprocessor::execute()
   if (_t >= _next_modification_start)
   {
     _next_modification_start = (_period_count + _cycles_between + 1) * _period;
-    this->_value = this->_value * _reff_value / _pps_value_old;
+    this->_value = this->_value * _reff_value / _pps_value;
   }
 }
 

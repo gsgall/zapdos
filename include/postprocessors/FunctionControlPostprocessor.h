@@ -21,7 +21,7 @@ public:
 
   virtual void initialize() override;
   virtual void execute() override;
-  using Postprocessor::getValue;
+  xs
   virtual Real getValue() const override;
 protected:
 
@@ -32,7 +32,7 @@ protected:
   // the previous post processor value
   // using this since we intend to use this with a periodic integrateor
   // and that sets the value to 0 on the start of a new cycle
-  const PostprocessorValue & _pps_value_old;
+  const PostprocessorValue & _pps_value;
   const Real _period;
   Real _period_count;
   Real _next_period_start;

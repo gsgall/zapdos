@@ -24,7 +24,6 @@ public:
   virtual void execute() override;
 
 protected:
-
   const Real _period;
   Real _period_count;
   Real _next_period_start;

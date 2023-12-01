@@ -53,24 +53,12 @@
   []
 []
 
-[Executioner]
-  type = Transient
-  end_time = 30.5
-  dt = 0.5
-  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
-  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
-  solve_type = NEWTON
-  line_search = 'none'
-[]
-
 [Postprocessors]
   [a]
     type = ElementIntegralVariablePostprocessor
     variable = v
     execute_on = 'initial timestep_end'
   []
-
 
   [mean_a]
     type = MultiplicationPostprocessor
@@ -86,18 +74,36 @@
     execute_on = 'initial timestep_end'
   []
 
+  [multi_period]
+    type = MultiPeriodAverager
+    value = periodic_a
+    cycle_frequency = 0.1
+    number_of_periods = 2
+    execute_on = 'initial timestep_begin'
+  []
 
   [mag]
     type = FunctionControlPostprocessor
-    value = periodic_a
+    value = multi_period
     cycle_frequency = 0.1
     initial_value = -4
     reference_value = 10
-    # start_cycle = 3
-    cycles_between_modification = 1
+    start_cycle = 2
+    cycles_between_modification = 2
     execute_on = 'initial timestep_end'
   []
 
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 200
+  dt = 0.5
+  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
+  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
+  solve_type = NEWTON
+  line_search = 'none'
 []
 
 [Outputs]

@@ -35,9 +35,8 @@ PeriodicTimeIntegratedPostprocessor::execute()
   TimeIntegratedPostprocessor::execute();
   if (_t >= _next_period_start)
   {
-    _period_count += 1;
+    _period_count++;
     _next_period_start = (_period_count + 1) * _period;
     this->_value = 0;
-    return;
   }
 }

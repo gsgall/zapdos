@@ -43,8 +43,6 @@
 
 [PeriodicControllers]
   [Shooting]
-    Disable_at_cycle_start = 'Postprocessors::a'
-    Enable_at_cycle_start = 'Postprocessors::a'
     starting_cycle = 0
     cycle_frequency = 0.1
     cycles_between_controls = 0
@@ -55,16 +53,6 @@
 
 
 
-[Executioner]
-  type = Transient
-  end_time = 50
-  dt = 1e-2
-  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
-  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
-  solve_type = NEWTON
-  line_search = 'none'
-[]
 
 [Postprocessors]
   [a]
@@ -86,6 +74,18 @@
     coeff = 0.1
     execute_on = 'timestep_end'
   []
+[]
+
+
+[Executioner]
+  type = Transient
+  end_time = 100
+  dt = 1e-2
+  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
+  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
+  solve_type = NEWTON
+  line_search = 'none'
 []
 
 [Outputs]

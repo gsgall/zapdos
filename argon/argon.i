@@ -1,27 +1,17 @@
+
+dom0Scale = 25.4e-3
+
 [GlobalParams]
-  offset = 20
-  potential_units = 'kV'
-  use_ad = true
-  use_log = true
+  potential_units = kV
   use_moles = true
-  position_units = 1
-  potential = 'potential'
-  electron_energy = 'mean_en'
-  mean_energy = 'mean_en'
-  mean_en = 'mean_en'
-  electron_density = 'em'
-  em = 'em'
-  block = 0
-  r = 0.0
   cycle_frequency = 13.56e6
 []
 
 [Mesh]
   [geo]
     type = FileMeshGenerator
-    file = 'cost_1d.msh'
+    file = 'Lymberopoulos_paper.msh'
   []
-
   [left]
     type = SideSetsFromNormalsGenerator
     normals = '-1 0 0'
@@ -32,7 +22,7 @@
     type = SideSetsFromNormalsGenerator
     normals = '1 0 0'
     new_boundary = 'right'
-    input = 'left'
+    input = left
   []
 []
 
@@ -42,51 +32,45 @@
 
 [DriftDiffusionAction]
   [Plasma]
-    electrons = 'em'
-    charged_particle = 'Ar+ Ar_2+'
-    Neutrals = 'Ar*'
+    electrons = em
+    charged_particle = Ar+
+    Neutrals = Ar*
+    potential = potential
     Is_potential_unique = true
-    using_offset = true
+    mean_energy = mean_en
+    position_units = ${dom0Scale}
     Additional_Outputs = 'ElectronTemperature Current EField'
   []
 []
 
 [Reactions]
-  [ZapdosRateNetwork]
-    name = 'rate'
-    species = 'em Ar* Ar+ Ar_2+'
+  [Argon]
+    name = 'test'
+    species = 'em Ar+ Ar*'
     aux_species = 'Ar'
-    gas_species = 'Ar'
     reaction_coefficient_format = 'rate'
-    include_electrons = true
-    file_location = 'old_reactions'
-    reactions = 'em + Ar -> em + Ar                  : EEDF [elastic]
-                 em + Ar -> em + Ar*                 : EEDF [-11.5]
-                 em + Ar* -> em + Ar                 : EEDF [11.5]
-                 em + Ar -> em + em + Ar+            : EEDF [-15.761]
-                 em + Ar* -> em + em + Ar+           : EEDF [-4.30]'
-  []
-
-  [ZapdosTownsendNetwork]
-    name = 'town'
-    species = 'em Ar* Ar+ Ar_2+'
-    aux_species = 'Ar'
     gas_species = 'Ar'
-    reaction_coefficient_format = 'townsend'
+    electron_energy = 'mean_en'
+    electron_density = 'em'
     include_electrons = true
-    equation_constants = 'Tgas'
-    equation_values = '345'
-    equation_variables = 'e_temp'
-    reactions = 'Ar_2+ + em -> Ar* + Ar              : {8.5e-7*((e_temp/1.5)*11600/300.0)^(-0.67)}
-                 Ar_2+ + Ar -> Ar+ + Ar + Ar         : {(6.06e-6/Tgas)*exp(-15130.0/Tgas)}
-                 Ar* + Ar* -> Ar_2+ + em             : {6.0e-10}
-                 Ar+ + em + em -> Ar + em            : {8.75e-27*((e_temp/1.5)^(-4.5))}
-                 Ar* + Ar + Ar -> Ar + Ar + Ar       : {1.399e-32}
-                 Ar+ + Ar + Ar -> Ar_2+ + Ar         : {2.25e-31*(Tgas/300.0)^(-0.4)}'
+    file_location = 'reactions'
+    potential = 'potential'
+    use_log = true
+    use_ad = false
+    track_rates = true
+    position_units = ${dom0Scale}
+    block = 0
+    convert_to_moles = true
+    reactions = 'em + Ar -> em + Ar         : EEDF [elastic] (reaction0)
+                 em + Ar -> em + Ar*        : EEDF [-11.56]  (reaction1)
+                 em + Ar -> em + em + Ar+   : EEDF [-15.7]   (reaction2)
+                 em + Ar* -> em + em + Ar+  : EEDF [-4.14]   (reaction3)'
   []
 []
-
 [AuxVariables]
+  [x_node]
+  []
+
   [Ar]
   []
 
@@ -100,11 +84,6 @@
     family = MONOMIAL
   []
 
-  [Ar_2_ion_power]
-    order = CONSTANT
-    family = MONOMIAL
-  []
-
   [total_power]
     order = CONSTANT
     family = MONOMIAL
@@ -112,41 +91,45 @@
 []
 
 [AuxKernels]
+  [x_ng]
+    type = Position
+    variable = x_node
+    position_units = ${dom0Scale}
+  []
+
   [Ar_val]
-    type = ConstantAux
+    type = FunctionAux
     variable = Ar
-    # value = 2.4463141e25
-    value = 3.7043332
+    function = 'log(3.22e22/6.022e23)'
     execute_on = INITIAL
   []
 
   [em_powerdep]
     type = ADPowerDep
     variable = e_power
+    potential = potential
     density_log = em
+    position_units = ${dom0Scale}
   []
 
   [Ar+_powerdep]
     type = ADPowerDep
     variable = Ar_ion_power
+    potential = potential
     density_log = Ar+
-  []
-
-  [Ar_2+_powerdep]
-    type = ADPowerDep
-    variable = Ar_2_ion_power
-    density_log = Ar_2+
+    position_units = ${dom0Scale}
   []
 
   [total_powerdep]
     type = ParsedAux
     variable = total_power
-    coupled_variables = 'e_power Ar_ion_power Ar_2_ion_power'
-    expression = 'e_power + Ar_ion_power + Ar_2_ion_power'
+    coupled_variables = 'e_power Ar_ion_power'
+    expression = 'e_power + Ar_ion_power'
   []
 []
 
 [BCs]
+  #Voltage Boundary Condition
   [potential_left]
     type = FunctionDirichletBC
     variable = potential
@@ -154,7 +137,6 @@
     function = potential_bc_func
     preset = false
   []
-
   [potential_dirichlet_right]
     type = DirichletBC
     variable = potential
@@ -163,118 +145,94 @@
     preset = false
   []
 
+  #Boundary conditions for electons
   [em_physical_right]
-    type = HagelaarElectronBC
+    type = LymberopoulosElectronBC
     variable = em
     boundary = 'right'
+    gamma = 0.01
+    ks = 1.19e5
+    ion = Ar+
+    potential = potential
+    position_units = ${dom0Scale}
   []
-
   [em_physical_left]
-    type = HagelaarElectronBC
+    type = LymberopoulosElectronBC
     variable = em
     boundary = 'left'
+    gamma = 0.01
+    ks = 1.19e5
+    ion = Ar+
+    potential = potential
+    position_units = ${dom0Scale}
   []
 
-  [Ar+_physical_right_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar+
-    boundary = 'right'
-  []
-
+  #Boundary conditions for ions
   [Ar+_physical_right_advection]
-    type = HagelaarIonAdvectionBC
+    type = LymberopoulosIonBC
     variable = Ar+
+    potential = potential
     boundary = 'right'
-  []
-
-  [Ar+_physical_left_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar+
-    boundary = 'left'
+    position_units = ${dom0Scale}
   []
   [Ar+_physical_left_advection]
-    type = HagelaarIonAdvectionBC
+    type = LymberopoulosIonBC
     variable = Ar+
+    potential = potential
     boundary = 'left'
+    position_units = ${dom0Scale}
   []
 
-  [Ar*_physical_right_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar*
-    boundary = 'right'
-  []
-
-  [Ar*_physical_left_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar*
-    boundary = 'left'
-  []
-
-  [Ar_2+_physical_right_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar_2+
-    boundary = 'right'
-  []
-  [Ar_2+_physical_right_advection]
-    type = HagelaarIonAdvectionBC
-    variable = Ar_2+
-    boundary = 'right'
-  []
-
-  [Ar_2+_physical_left_diffusion]
-    type = HagelaarIonDiffusionBC
-    variable = Ar_2+
-    boundary = 'left'
-  []
-  [Ar_2+_physical_left_advection]
-    type = HagelaarIonAdvectionBC
-    variable = Ar_2+
-    boundary = 'left'
-  []
-
+  #Boundary conditions for mean energy
   [mean_en_physical_right]
-    type = EnergyBC2
+    type = ElectronTemperatureDirichletBC
     variable = mean_en
+    em = em
+    value = 0.5
     boundary = 'right'
-    ip = Ar+
-    args = 'Ar+ Ar_2+'
   []
-
   [mean_en_physical_left]
-    type = EnergyBC2
+    type = ElectronTemperatureDirichletBC
     variable = mean_en
+    em = em
+    value = 0.5
     boundary = 'left'
-    ip = Ar+
-    args = 'Ar+ Ar_2+'
+  []
+  # metastable boundary conditions
+  [Ar*_physical_right_diffusion]
+    type = LogDensityDirichletBC
+    variable = Ar*
+    boundary = 'right'
+    value = 100
+  []
+  [Ar*_physical_left_diffusion]
+    type = LogDensityDirichletBC
+    variable = Ar*
+    boundary = 'left'
+    value = 100
   []
 []
 
 [ICs]
   [em_ic]
-    type = ConstantIC
+    type = FunctionIC
     variable = em
-    value = -21
+    function = density_ic_func
   []
   [Ar+_ic]
-    type = ConstantIC
+    type = FunctionIC
     variable = Ar+
-    value = -21
+    function = density_ic_func
   []
   [Ar*_ic]
-    type = ConstantIC
+    type = FunctionIC
     variable = Ar*
-    value = -21
+    function = density_ic_func
   []
-  [Ar_2+_ic]
-    type = ConstantIC
-    variable = Ar_2+
-    value = -24
-  []
-
   [mean_en_ic]
-    type = ConstantIC
+    type = FunctionIC
     variable = mean_en
-    value = -20
+    function = energy_density_ic_func
   []
 
   [potential_ic]
@@ -287,14 +245,21 @@
 [Functions]
   [potential_bc_func]
     type = ParsedFunction
-    symbol_names = 'voltage f'
-    symbol_values = 'voltage 13.56e6'
-    expression = 'voltage * sin(2*pi*f*t) '
+    symbol_names = 'f'
+    symbol_values = '13.56e6'
+    expression = '0.100*sin(2*pi*f*t)'
   []
-
   [potential_ic_func]
     type = ParsedFunction
-    expression = '0.14'
+    expression = '0.100 * (25.4e-3 - x)'
+  []
+  [density_ic_func]
+    type = ParsedFunction
+    expression = 'log((1e13 + 1e15 * (1-x/1)^2 * (x/1)^2)/6.022e23)'
+  []
+  [energy_density_ic_func]
+    type = ParsedFunction
+    expression = 'log(3./2.) + log((1e13 + 1e15 * (1-x/1)^2 * (x/1)^2)/6.022e23)'
   []
 []
 
@@ -321,7 +286,7 @@
     execute_on = 'initial timestep_end'
   []
 
-  [mean_periodic_power_dep]
+  [mean_periodic_power]
     type = MultiplicationPostprocessor
     value = periodic_power
     # coeff is 30e-3 * 1e-3 * 13.56e6
@@ -330,12 +295,37 @@
     coeff = '406.8'
   []
 
+  [multi_period]
+    type = MultiPeriodAverager
+    value = mean_periodic_power
+    number_of_periods = 5
+    execute_on = 'initial timestep_begin'
+  []
+
   [voltage]
     type = FunctionControlPostprocessor
-    value = mean_periodic_power_dep
-    initial_value = 0.5
-    reference_value = 0.1
-    start_cycle = 1e7
+    value = multi_period
+    initial_value = 0.1
+    start_cycle = 1e9
+    reference_value = 0.2
+    execute_on = 'initial timestep_end'
+  []
+
+  [total_electron_density]
+    type = ElementIntegralVariablePostprocessor
+    variable = em_density
+    execute_on = 'initial timestep_end'
+  []
+
+  [total_Ar+_density]
+    type = ElementIntegralVariablePostprocessor
+    variable = Ar+_density
+    execute_on = 'initial timestep_end'
+  []
+
+  [total_Ar*_density]
+    type = ElementIntegralVariablePostprocessor
+    variable = Ar*_density
     execute_on = 'initial timestep_end'
   []
 []
@@ -346,33 +336,30 @@
     interp_trans_coeffs = false
     interp_elastic_coeff = false
     ramp_trans_coeffs = false
-    user_p_gas = 1.01325e5
-    user_se_coeff = 0
-    user_electron_mobility = 0.0352103411399
-    user_electron_diffusion_coeff = 0.297951680159
-    property_tables_file = reactions/electron_moments_new.txt
+    user_p_gas = 133.322
+    em = em
+    potential = potential
+    mean_en = mean_en
+    user_electron_mobility = 30.0
+    user_electron_diffusion_coeff = 119.8757763975
+    property_tables_file = reactions/electron_moments.txt
   []
-
   [gas_species_0]
     type = ADHeavySpecies
     heavy_species_name = Ar+
     heavy_species_mass = 6.64e-26
     heavy_species_charge = 1.0
-
+    mobility = 0.144409938
+    diffusivity = 6.428571e-3
   []
   [gas_species_1]
     type = ADHeavySpecies
     heavy_species_name = Ar*
     heavy_species_mass = 6.64e-26
     heavy_species_charge = 0.0
+    diffusivity = 7.515528e-3
   []
-  [gas_species_4]
-    type = ADHeavySpecies
-    heavy_species_name = Ar_2+
-    heavy_species_mass = 1.32670418e-25
-    heavy_species_charge = 1.0
-  []
-  [gas_species_7]
+  [gas_species_2]
     type = ADHeavySpecies
     heavy_species_name = Ar
     heavy_species_mass = 6.64e-26
@@ -393,36 +380,25 @@
   []
 []
 
-
-
 [Executioner]
   type = Transient
-  end_time = 1e-4
-  dtmax = 3.7e-9
-  solve_type = NEWTON
-  line_search = none
-  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda -pc_factor_mat_solver'
-  petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3 superlu_dists'
-  # scheme = 'bdf2'
-  nl_rel_tol = 1e-4
-  nl_abs_tol = 7.6e-5
+  end_time = 7.3746e-5
+  dt = 1e-9
   dtmin = 1e-14
+  scheme = bdf2
+  solve_type = NEWTON
+
+  petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -snes_linesearch_minlambda'
+  petsc_options_value = 'lu NONZERO 1.e-10 1e-3'
+
+  nl_rel_tol = 1e-08
   l_max_its = 20
-
-  automatic_scaling = true
-  compute_scaling_once = false
-
-  [TimeStepper]
-    type = IterationAdaptiveDT
-    cutback_factor = 0.4
-    dt = 1e-11
-    growth_factor = 1.2
-    optimal_iterations = 20
-  []
 []
 
+
 [Outputs]
+  perf_graph = true
   [out]
     type = Exodus
   []
