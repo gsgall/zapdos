@@ -33,7 +33,7 @@ void
 PeriodicTimeIntegratedPostprocessor::execute()
 {
   TimeIntegratedPostprocessor::execute();
-  if (_t >= _next_period_start)
+  if (std::abs(_t - _next_period_start) <= _dt * 1e-3)
   {
     _period_count++;
     _next_period_start = (_period_count + 1) * _period;

@@ -80,6 +80,7 @@
 [Executioner]
   type = Transient
   end_time = 100
+  start_time = -2e-2
   dt = 1e-2
   petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'

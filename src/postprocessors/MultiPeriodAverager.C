@@ -43,7 +43,7 @@ MultiPeriodAverager::initialize()
 void
 MultiPeriodAverager::execute()
 {
-  if (_t >= _next_period_start)
+  if (std::abs(_t - _next_period_start) <= _dt * 1e-3)
   {
     _period_count += 1;
     _cyclic_period_count += 1;
