@@ -61,27 +61,40 @@
     execute_on = 'initial timestep_end'
   []
 
-  [periodic_a]
-    type = PeriodicTimeIntegratedPostprocessor
+  [true]
+    type = TimeIntegratedPostprocessor
     value = a
-    cycle_frequency = 0.1
-    execute_on = 'initial timestep_end'
+    execute_on =  'initial timestep_end'
   []
 
-  [mean_a]
-    type = MultiplicationPostprocessor
-    value = periodic_a
-    coeff = 0.1
-    execute_on = 'timestep_end'
+  [mean]
+    type = MultipliedTimeIntegratedPostprocessor
+    value = a
+    coefficient = 2
+    execute_on =  'initial timestep_end'
   []
+
+  # [periodic_a]
+  #   type = PeriodicTimeIntegratedPostprocessor
+  #   value = a
+  #   cycle_frequency = 0.1
+  #   execute_on = 'initial timestep_end'
+  # []
+
+  # [mean_a]
+  #   type = MultiplicationPostprocessor
+  #   value = periodic_a
+  #   coeff = 0.1
+  #   execute_on = 'timestep_end'
+  # []
 []
 
 
 [Executioner]
   type = Transient
   end_time = 100
-  start_time = -2e-2
-  dt = 1e-2
+  # start_time = -2e-2
+  dt = 0.5
   petsc_options = '-snes_converged_reason -snes_linesearch_monitor'
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -ksp_type -snes_linesearch_minlambda'
   petsc_options_value = 'lu NONZERO 1.e-10 fgmres 1e-3'
