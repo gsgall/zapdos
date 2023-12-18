@@ -21,6 +21,9 @@ Sigma::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addRequiredCoupledVar("n", "The density of the ions.");
+  params.addClassDescription(
+      "Calculates the surface charge due to a simplified version of the ion flux "
+      "to a boundary.");
   return params;
 }
 
