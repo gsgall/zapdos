@@ -26,6 +26,7 @@ TotalFluxTempl<is_ad>::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addRequiredCoupledVar("density_log", "The electron density");
+  params.addParam<int>("component", 0, "The component of position. (0 = x, 1 = y, 2 = z)");
   params.addClassDescription("Returns the total flux of defined species");
 
   return params;
@@ -35,6 +36,7 @@ template <bool is_ad>
 TotalFluxTempl<is_ad>::TotalFluxTempl(const InputParameters & parameters)
   : AuxKernel(parameters),
 
+    _component(getParam<int>("component")),
     _density_var(*getVar("density_log", 0)),
     _density_log(coupledValue("density_log")),
     _grad_density_log(coupledGradient("density_log")),
@@ -50,9 +52,9 @@ template <bool is_ad>
 Real
 TotalFluxTempl<is_ad>::computeValue()
 {
-  return _sgn[_qp] * raw_value(_mu[_qp]) * raw_value(_electric_field[_qp](0)) *
+  return _sgn[_qp] * raw_value(_mu[_qp]) * raw_value(_electric_field[_qp](_component)) *
              std::exp(_density_log[_qp]) -
-         raw_value(_diff[_qp]) * std::exp(_density_log[_qp]) * _grad_density_log[_qp](0);
+         raw_value(_diff[_qp]) * std::exp(_density_log[_qp]) * _grad_density_log[_qp](_component);
 }
 
 template class TotalFluxTempl<false>;
