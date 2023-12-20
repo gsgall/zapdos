@@ -18,6 +18,9 @@ HagelaarElectronBC::validParams()
   InputParameters params = ADIntegratedBC::validParams();
   params.addRequiredParam<Real>("r", "The reflection coefficient");
   params.addRequiredCoupledVar("mean_en", "The mean energy.");
+  params.deprecateCoupledVar("mean_en", "electron_energy", "06/01/2024");
+  params.addRequiredCoupledVar("electron_energy", "The mean electron energy density in log form");
+
   params.addRequiredParam<Real>("position_units", "Units of position.");
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
@@ -33,7 +36,7 @@ HagelaarElectronBC::HagelaarElectronBC(const InputParameters & parameters)
     _r(getParam<Real>("r")),
 
     // Coupled Variables
-    _mean_en(adCoupledValue("mean_en")),
+    _mean_en(adCoupledValue("electron_energy")),
 
     _muem(getADMaterialProperty<Real>("muem")),
     _massem(getMaterialProperty<Real>("massem")),

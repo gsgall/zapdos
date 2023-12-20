@@ -18,6 +18,8 @@ HagelaarEnergyBC::validParams()
   InputParameters params = ADIntegratedBC::validParams();
   params.addRequiredParam<Real>("r", "The reflection coefficient");
   params.addRequiredCoupledVar("em", "The electron density.");
+  params.deprecateCoupledVar("em", "electrons", "06/01/2024");
+  params.addRequiredCoupledVar("electrons", "The electron density in log form");
   params.addRequiredParam<Real>("position_units", "Units of position.");
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
@@ -35,10 +37,7 @@ HagelaarEnergyBC::HagelaarEnergyBC(const InputParameters & parameters)
 
     _massem(getMaterialProperty<Real>("massem")),
     _e(getMaterialProperty<Real>("e")),
-    _se_coeff(getMaterialProperty<Real>("se_coeff")),
-    _se_energy(getMaterialProperty<Real>("se_energy")),
     _mumean_en(getADMaterialProperty<Real>("mumean_en")),
-
     _electric_field(
         getADMaterialProperty<RealVectorValue>(getParam<std::string>("field_property_name")))
 {

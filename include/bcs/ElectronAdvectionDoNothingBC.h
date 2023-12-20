@@ -29,8 +29,4 @@ protected:
   const ADMaterialProperty<Real> & _muem;
   const MaterialProperty<Real> & _sign;
   const ADMaterialProperty<RealVectorValue> & _electric_field;
-
-private:
-  // Coupled variables
-  const ADVariableValue & _mean_en;
 };

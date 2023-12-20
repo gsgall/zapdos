@@ -473,6 +473,7 @@ vhigh = -150E-3 #kV
     mean_en = mean_en
     r = 0
     position_units = ${dom0Scale}
+    emission_coeffs = 0.02
   []
 
   [potential_dirichlet_right]
@@ -492,6 +493,7 @@ vhigh = -150E-3 #kV
     mean_en = mean_en
     r = 1
     position_units = ${dom0Scale}
+    emission_coeffs = 0.02
   []
 
   # [em_physical_left]

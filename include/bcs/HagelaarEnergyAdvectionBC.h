@@ -24,17 +24,18 @@ protected:
 
   Real _r_units;
   Real _r;
-
+  const unsigned int _num_ions;
   // Coupled variables
-  MooseVariable & _ip_var;
-  const ADVariableValue & _ip;
-  const ADVariableGradient & _grad_ip;
 
-  const MaterialProperty<Real> & _sgnip;
-  const ADMaterialProperty<Real> & _muip;
-  const ADMaterialProperty<Real> & _Dip;
-  const MaterialProperty<Real> & _se_coeff;
-  const MaterialProperty<Real> & _se_energy;
+  std::vector<MooseVariable *> _ip_var;
+  std::vector<const ADVariableValue *> _ip;
+  std::vector<const ADVariableGradient *> _grad_ip;
+
+  std::vector<const MaterialProperty<Real> *> _sgnip;
+  std::vector<const ADMaterialProperty<Real> *> _muip;
+  std::vector<const ADMaterialProperty<Real> *> _Dip;
+  const std::vector<Real> _se_coeff;
+  const Real _se_energy;
   const ADMaterialProperty<Real> & _mumean_en;
 
   const ADMaterialProperty<RealVectorValue> & _electric_field;
@@ -43,4 +44,5 @@ protected:
   ADRealVectorValue _ion_flux;
   Real _v_thermal;
   Real _n_gamma;
+  ADReal _bc_val;
 };

@@ -16,7 +16,6 @@ InputParameters
 ElectronAdvectionDoNothingBC::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
-  params.addRequiredCoupledVar("mean_en", "The log of the mean energy.");
   params.addRequiredParam<Real>("position_units", "The units of position.");
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
@@ -35,10 +34,7 @@ ElectronAdvectionDoNothingBC::ElectronAdvectionDoNothingBC(const InputParameters
     _sign(getMaterialProperty<Real>("sgnem")),
 
     _electric_field(
-        getADMaterialProperty<RealVectorValue>(getParam<std::string>("field_property_name"))),
-
-    // Coupled variables
-    _mean_en(adCoupledValue("mean_en"))
+        getADMaterialProperty<RealVectorValue>(getParam<std::string>("field_property_name")))
 {
 }
 

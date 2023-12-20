@@ -22,9 +22,10 @@ public:
 protected:
   virtual ADReal computeQpResidual() override;
 
-  Real _r_units;
-  bool Te_dependent;
-
+  const Real _r_units;
+  const bool Te_dependent;
+  const unsigned int _num_ions;
+  const std::vector<Real> _se_coeff;
   // Coupled variables
   const ADVariableValue & _em;
   std::vector<MooseVariable *> _ip_var;
@@ -32,16 +33,11 @@ protected:
 
   std::vector<const MaterialProperty<Real> *> _sgnip;
   std::vector<const ADMaterialProperty<Real> *> _muip;
-  Real _se_coeff;
+
   Real _user_se_energy;
 
   Real _a;
   ADReal _se_energy;
   ADRealVectorValue _ion_flux;
-
-  unsigned int _num_ions;
-  unsigned int _ip_index;
-  std::vector<unsigned int>::iterator _iter;
-
   const ADMaterialProperty<RealVectorValue> & _electric_field;
 };

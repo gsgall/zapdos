@@ -451,7 +451,9 @@ dom1Scale = 1e-7
     em = em
     ip = 'Arp'
     r = 0
+    emission_coeffs = 0.05
     position_units = ${dom0Scale}
+    secondary_electron_energy = 3
   []
 
   [potential_left]
@@ -465,6 +467,7 @@ dom1Scale = 1e-7
     mean_en = mean_en
     r = 0
     position_units = ${dom0Scale}
+    emission_coeffs = 0.05
   []
   [potential_dirichlet_right]
     type = DirichletBC
@@ -511,6 +514,7 @@ dom1Scale = 1e-7
     mean_en = mean_en
     r = 0
     position_units = ${dom0Scale}
+    emission_coeffs = 0.05
   []
   [Arp_physical_left_diffusion]
     type = HagelaarIonDiffusionBC
