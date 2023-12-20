@@ -110,7 +110,7 @@ FieldEmissionBC::computeQpResidual()
   {
     _a = 0.0;
 
-    for (auto i = 0; i < _num_ions; ++i)
+    for (unsigned int i = 0; i < _num_ions; ++i)
     {
 
       _ion_flux = (*_sgnip[i])[_qp] * (*_muip[i])[_qp] * _electric_field[_qp] * _r_units *
