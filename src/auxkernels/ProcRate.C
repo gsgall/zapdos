@@ -32,7 +32,7 @@ ProcRateTempl<is_ad>::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addClassDescription(
-      "Reaction rate for electron impact collisions in units of #/m^3s. User can pass "
+      "Reaction rate for electron impact collisions in units of #/m$^{3}$s. User can pass "
       "choice of elastic, excitation, or ionization Townsend coefficients");
   return params;
 }

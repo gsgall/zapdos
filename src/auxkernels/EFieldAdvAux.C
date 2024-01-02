@@ -27,8 +27,9 @@ EFieldAdvAuxTempl<is_ad>::validParams()
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
-  params.addParam<int>("component", 0, "The component of position. (0 = x, 1 = y, 2 = z)");
-  params.addClassDescription("Returns the electric field driven advective flux of defined species");
+  params.addParam<int>("component", 0, "The component the EField Vector. (0 = x, 1 = y, 2 = z)");
+  params.addClassDescription(
+      "Returns the electric field driven advective flux of the specified species");
   return params;
 }
 

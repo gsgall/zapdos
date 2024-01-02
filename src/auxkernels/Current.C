@@ -24,7 +24,8 @@ CurrentTempl<is_ad>::validParams()
   InputParameters params = AuxKernel::validParams();
 
   params.addRequiredCoupledVar("density_log", "The electron density");
-  params.addParam<int>("component", 0, "The component of position. (0 = x, 1 = y, 2 = z)");
+  params.addParam<int>(
+      "component", 0, "The component of the Current vector. (0 = x, 1 = y, 2 = z)");
   params.addParam<bool>(
       "art_diff", false, "Whether there is a current contribution from artificial diffusion.");
   params.addRequiredParam<Real>("position_units", "Units of position.");
@@ -32,7 +33,7 @@ CurrentTempl<is_ad>::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addClassDescription(
-      "Returns the electric current associated with the flux of defined species");
+      "Returns the electric current associated with the flux of the specified species");
   return params;
 }
 

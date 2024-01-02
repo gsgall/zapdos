@@ -28,7 +28,7 @@ DriftDiffusionFluxAux::validParams()
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
-  params.addClassDescription("Returns the drift-diffusion flux of defined species");
+  params.addClassDescription("Returns the drift-diffusion flux of the specified species");
   return params;
 }
 
