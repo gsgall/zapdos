@@ -24,7 +24,7 @@ ElectronEnergyLossFromExcitation::validParams()
   params.addClassDescription(
       "Electron energy loss term for inelastic excitation collisions"
       "using Townsend coefficient; Eex is the energy lost in Volts in a single"
-      "excitation collision (Densities must be in log form)");
+      "excitation collision (Densities must be in logarithmic form)");
   return params;
 }
 

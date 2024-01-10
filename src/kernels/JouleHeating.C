@@ -23,7 +23,7 @@ JouleHeating::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addClassDescription(
-      "Joule heating term for electrons (densities must be in log form), where the Jacobian is "
+      "Joule heating term for electrons (densities must be in logarithmic form), where the Jacobian is "
       "computed using forward automatic differentiation.");
   return params;
 }

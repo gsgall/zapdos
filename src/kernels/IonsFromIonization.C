@@ -23,7 +23,7 @@ IonsFromIonization::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addClassDescription("Rate of production of ions from ionization using Townsend coefficient"
-                             "(Ion density must be in log form)");
+                             "(Ion density must be in logarithmic form)");
   return params;
 }
 

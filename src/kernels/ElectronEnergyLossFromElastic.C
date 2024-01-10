@@ -22,8 +22,8 @@ ElectronEnergyLossFromElastic::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addClassDescription(
-      "Electron energy loss term for elastic collisions using Townsend coefficient"
-      "(Densities must be in log form)");
+      "Electron energy loss term for elastic collisions using Townsend coefficient "
+      "(Densities must be in logarithmic form)");
   return params;
 }
 

@@ -25,7 +25,7 @@ ExcitationReaction::validParams()
                                "Name of the solver interface material property.");
   params.addClassDescription(
       "Rate of production of metastables from excitation using Townsend coefficient"
-      "(Densities must be in log form)");
+      "(Densities must be in logarithmic form)");
   return params;
 }
 

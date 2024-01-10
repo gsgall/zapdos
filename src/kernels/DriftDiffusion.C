@@ -24,9 +24,9 @@ DriftDiffusion::validParams()
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
-  params.addClassDescription("Generic drift-diffusion equation that contains both"
-                             "electric field driven advection and diffusion term"
-                             "(Densities must be in log form)");
+  params.addClassDescription("Generic drift-diffusion equation that contains both "
+                             "electric field driven advection and diffusion term "
+                             "(Densities must be in logarithmic form)");
   return params;
 }
 

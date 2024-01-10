@@ -22,9 +22,9 @@ ElectronEnergyLossFromIonization::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addClassDescription(
-      "Electron energy loss term for inelastic ionization collisions"
-      "using Townsend coefficient; Eiz is the energy lost in Volts in a single"
-      "ionization collision (Densities must be in log form)");
+      "Electron energy loss term for inelastic ionization collisions "
+      "using Townsend coefficient; Eiz is the energy lost in Volts in a single "
+      "ionization collision (Densities must be in logarithmic form)");
   return params;
 }
 
