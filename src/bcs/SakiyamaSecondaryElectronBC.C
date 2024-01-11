@@ -24,7 +24,7 @@ SakiyamaSecondaryElectronBC::validParams()
       "users_gamma", "A secondary electron emission coeff. only used for this BC.");
   params.deprecateParam("users_gamma", "emission_coeffs", "06/01/2024");
   params.addRequiredParam<std::vector<Real>>(
-      "emission_coeffs", "A list of species dependent secondary electron emmisions coefficients");
+      "emission_coeffs", "A list of species-dependent secondary electron emission coefficients");
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
@@ -47,7 +47,9 @@ SakiyamaSecondaryElectronBC::SakiyamaSecondaryElectronBC(const InputParameters &
     _ion_flux(0, 0, 0)
 {
   if (_user_se_coeff.size() != _num_ions)
-    mooseError("SakiyamaSecondaryElectronBC: The lengths of `ions` and `emission_coeffs` must be "
+    mooseError("SakiyamaSecondaryElectronBC with name ",
+               name(),
+               ": The lengths of `ions` and `emission_coeffs` must be "
                "the same");
   _ip.resize(_num_ions);
   _muip.resize(_num_ions);

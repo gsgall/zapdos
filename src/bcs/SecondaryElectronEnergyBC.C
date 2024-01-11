@@ -30,7 +30,7 @@ SecondaryElectronEnergyBC::validParams()
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
   params.addRequiredParam<std::vector<Real>>(
-      "emission_coeffs", "A species dependent list of secondary electron emmision coefficients");
+      "emission_coeffs", "A species-dependent list of secondary electron emission coefficients");
   params.addRequiredParam<Real>("secondary_electron_energy", "The secondary electron energy in eV");
   return params;
 }
@@ -63,7 +63,7 @@ SecondaryElectronEnergyBC::SecondaryElectronEnergyBC(const InputParameters & par
 
   if (_se_coeff.size() != _num_ions)
     mooseError(
-        "SecondaryElectronEnergyBC: The lengths of `ions` and `emission_coeffs` must be the same");
+        "SecondaryElectronEnergyBC with name ", name(), ": The lengths of `ions` and `emission_coeffs` must be the same");
 
   // Resize the vectors to store _num_ions values:
   _ip.resize(_num_ions);
