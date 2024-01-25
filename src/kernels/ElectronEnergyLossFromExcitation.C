@@ -21,10 +21,9 @@ ElectronEnergyLossFromExcitation::validParams()
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
-  params.addClassDescription(
-      "Electron energy loss term for inelastic excitation collisions "
-      "using Townsend coefficient, the energy lost in Volts in a single "
-      "excitation collision (Densities must be in logarithmic form)");
+  params.addClassDescription("Electron energy loss term for inelastic excitation collisions "
+                             "using Townsend coefficient, the energy lost in Volts in a single "
+                             "excitation collision (Densities must be in logarithmic form)");
   return params;
 }
 

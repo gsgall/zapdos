@@ -21,10 +21,9 @@ ElectronEnergyLossFromIonization::validParams()
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
                                "Name of the solver interface material property.");
-  params.addClassDescription(
-      "Electron energy loss term for inelastic ionization collisions "
-      "using Townsend coefficients, the energy lost in Volts in a single "
-      "ionization collision (Densities must be in logarithmic form)");
+  params.addClassDescription("Electron energy loss term for inelastic ionization collisions "
+                             "using Townsend coefficients, the energy lost in Volts in a single "
+                             "ionization collision (Densities must be in logarithmic form)");
   return params;
 }
 
