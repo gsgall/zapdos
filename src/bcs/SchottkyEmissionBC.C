@@ -23,9 +23,10 @@ SchottkyEmissionBC::validParams()
   params.addRequiredCoupledVar("ip", "The ion density.");
   params.deprecateCoupledVar("ip", "ions", "06/01/2024");
   params.addRequiredCoupledVar("ions", "A list of ion densities in log form");
-  params.addRequiredParam<std::vector<Real>>("emission_coeffs",
-                                             "A list of species-dependent secondary electron "
-                                             "emission coefficients for each species in `ions`");
+  params.addRequiredParam<std::vector<std::string>>(
+      "emission_coeffs",
+      "A list of species-dependent secondary electron "
+      "emission coefficients for each species in `ions`");
   params.addRequiredParam<Real>("position_units", "Units of position.");
   params.addRequiredParam<std::string>("potential_units", "The potential units.");
   params.addParam<Real>("tau", 1e-9, "The time constant for ramping the boundary condition.");
@@ -42,7 +43,7 @@ SchottkyEmissionBC::SchottkyEmissionBC(const InputParameters & parameters)
     _r_units(1. / getParam<Real>("position_units")),
     _r(getParam<Real>("r")),
     _num_ions(coupledComponents("ions")),
-    _se_coeff(getParam<std::vector<Real>>("emission_coeffs")),
+    _se_coeff_names(getParam<std::vector<std::string>>("emission_coeffs")),
     // Coupled Variables
     _mean_en(adCoupledValue("electron_energy")),
 
@@ -62,8 +63,10 @@ SchottkyEmissionBC::SchottkyEmissionBC(const InputParameters & parameters)
         getADMaterialProperty<RealVectorValue>(getParam<std::string>("field_property_name")))
 
 {
-  if (_se_coeff.size() != _num_ions)
-    mooseError("SchottkyEmissionBC with name ", name(), ": The lengths of `ions` and `emission_coeffs` must be the same");
+  if (_se_coeff_names.size() != _num_ions)
+    mooseError("SchottkyEmissionBC with name ",
+               name(),
+               ": The lengths of `ions` and `emission_coeffs` must be the same");
 
   if (_potential_units.compare("V") == 0)
   {
@@ -83,6 +86,7 @@ SchottkyEmissionBC::SchottkyEmissionBC(const InputParameters & parameters)
   _sgnip.resize(_num_ions);
   _muip.resize(_num_ions);
   _Dip.resize(_num_ions);
+  _se_coeff.resize(_num_ions);
 
   for (unsigned int i = 0; i < _num_ions; ++i)
   {
@@ -92,19 +96,13 @@ SchottkyEmissionBC::SchottkyEmissionBC(const InputParameters & parameters)
     _sgnip[i] = &getMaterialProperty<Real>("sgn" + (*getVar("ions", i)).name());
     _muip[i] = &getADMaterialProperty<Real>("mu" + (*getVar("ions", i)).name());
     _Dip[i] = &getADMaterialProperty<Real>("diff" + (*getVar("ions", i)).name());
+    _se_coeff[i] = &getADMaterialProperty<Real>(_se_coeff_names[i]);
   }
 }
 
 ADReal
 SchottkyEmissionBC::computeQpResidual()
 {
-  ADReal dPhi;
-  Real kB;
-  ADReal jRD;
-  ADReal jSE;
-  ADReal F;
-  Real _relaxation_Expr;
-
   _v_thermal =
       std::sqrt(8 * _e[_qp] * 2.0 / 3 * std::exp(_mean_en[_qp] - _u[_qp]) / (M_PI * _massem[_qp]));
 
@@ -120,7 +118,7 @@ SchottkyEmissionBC::computeQpResidual()
     _ion_flux.zero();
     for (unsigned int i = 0; i < _num_ions; ++i)
     {
-      _ion_flux += _se_coeff[i] *
+      _ion_flux += (*_se_coeff[i])[_qp] *
                    ((*_sgnip[i])[_qp] * (*_muip[i])[_qp] * _electric_field[_qp] * _r_units *
                         std::exp((*_ip[i])[_qp]) -
                     (*_Dip[i])[_qp] * std::exp((*_ip[i])[_qp]) * (*_grad_ip[i])[_qp] * _r_units);

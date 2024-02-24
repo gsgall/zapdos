@@ -24,7 +24,6 @@ public:
 protected:
   virtual ADReal computeQpResidual() override;
 
-  int _charge_sign;
-
+  const int _charge_sign;
   const ADMaterialProperty<RealVectorValue> & _electric_field;
 };
