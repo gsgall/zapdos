@@ -484,10 +484,10 @@ area = 5.02e-7 # Formerly 3.14e-6
   #               variable = potential
   #               boundary = left
   #               function = potential_bc_func
-  #               ip = Arp
+  #               ions = Arp
   #               data_provider = data_provider
-  #               em = em
-  #               mean_en = mean_en
+  #               electrons = em
+  #               electron_energy = mean_en
   #               r = 0
   #               position_units = ${dom0Scale}
   #       []
@@ -500,9 +500,9 @@ area = 5.02e-7 # Formerly 3.14e-6
   #       function = potential_bc_func
   #       current_density = current_density_user_object
 
-  #       ip = Arp
-  #       em = em
-  #       mean_en = mean_en
+  #       ions = Arp
+  #       electrons = em
+  #       electron_energy = mean_en
 
   #       data_provider = data_provider
 
@@ -540,8 +540,8 @@ area = 5.02e-7 # Formerly 3.14e-6
     #               type = SecondaryElectronBC
     variable = em
     boundary = 'left'
-    ip = Arp
-    mean_en = mean_en
+    ions = Arp
+    electron_energy = mean_en
     r = 1
     position_units = ${dom0Scale}
     tau = ${relaxTime}
@@ -602,7 +602,7 @@ area = 5.02e-7 # Formerly 3.14e-6
     type = HagelaarEnergyBC
     variable = mean_en
     boundary = 'left'
-    em = em
+    electrons = em
     r = 0
     position_units = ${dom0Scale}
   []
@@ -611,7 +611,7 @@ area = 5.02e-7 # Formerly 3.14e-6
     type = HagelaarEnergyBC
     variable = mean_en
     boundary = right
-    em = em
+    electrons = em
     r = 0
     position_units = ${dom0Scale}
   []

@@ -403,13 +403,13 @@ dom0Scale = 25.4e-3
     type = EconomouDielectricBC
     variable = potential
     boundary = 'Top_Insulator Bottom_Insulator'
-    em = em
-    ip = Ar+
-    potential_ion = potential_ion
-    mean_en = mean_en
+    electrons = em
+    ions = Ar+
+    ion_potentials = potential_ion
+    electron_energy = mean_en
     dielectric_constant = 1.859382e-11
     thickness = 0.0127
-    users_gamma = 0.01
+    emission_coeffs = 0.01
     position_units = ${dom0Scale}
   []
 
@@ -417,7 +417,7 @@ dom0Scale = 25.4e-3
   [em_physical_diffusion]
     type = SakiyamaElectronDiffusionBC
     variable = em
-    mean_en = mean_en
+    electron_energy = mean_en
     boundary = 'Top_Electrode Bottom_Electrode Top_Insulator Bottom_Insulator Walls'
     position_units = ${dom0Scale}
   []
@@ -425,8 +425,8 @@ dom0Scale = 25.4e-3
     type = SakiyamaSecondaryElectronBC
     variable = em
     field_property_name = potential_ion_property
-    ip = Ar+
-    users_gamma = 0.01
+    ions = Ar+
+    emission_coeffs = 0.01
     boundary = 'Top_Electrode Bottom_Electrode Top_Insulator Bottom_Insulator Walls'
     position_units = ${dom0Scale}
   []
@@ -453,18 +453,18 @@ dom0Scale = 25.4e-3
   [mean_en_physical_diffusion]
     type = SakiyamaEnergyDiffusionBC
     variable = mean_en
-    em = em
+    electrons = em
     boundary = 'Top_Electrode Bottom_Electrode Top_Insulator Bottom_Insulator Walls'
     position_units = ${dom0Scale}
   []
   [mean_en_Ar+_second_emissions]
     type = SakiyamaEnergySecondaryElectronBC
     variable = mean_en
-    em = em
-    ip = Ar+
+    electrons = em
+    ions = Ar+
     field_property_name = potential_ion_property
     Tse_equal_Te = true
-    se_coeff = 0.01
+    emission_coeffs = 0.01
     boundary = 'Top_Electrode Bottom_Electrode Top_Insulator Bottom_Insulator Walls'
     position_units = ${dom0Scale}
   []
