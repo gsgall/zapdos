@@ -27,7 +27,6 @@ Extensions:
                 Generating Meshes: getting_started/zapdos_meshing.md
             Documentation:
                 Complete Code Syntax: syntax/index.md
-                Zapdos Doxygen: doxygen/classes.html
                 MOOSE Doxygen: https://mooseframework.inl.gov/docs/doxygen/moose/classes.html
                 libMesh Doxygen: https://mooseframework.inl.gov/docs/doxygen/libmesh/classes.html
                 Zapdos A to Z Index: a-to-z.md
