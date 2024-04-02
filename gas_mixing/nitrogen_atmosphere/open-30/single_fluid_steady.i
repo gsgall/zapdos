@@ -4,7 +4,7 @@
 []
 
 [Mesh]
-  file = 'cost_jet_half_8mm.msh'
+  file = 'cost_jet_half_open.msh'
   second_order = true
   coord_type = RZ
   rz_coord_axis = Y
@@ -12,7 +12,7 @@
 
 [Variables]
   [velocity]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE_VEC
     block = 'plasma'
   []
@@ -26,6 +26,7 @@
   [lambda]
     family = SCALAR
     order = FIRST
+    block = 'plasma'
   []
 []
 
@@ -58,6 +59,25 @@
     variable = velocity
     pressure = p
     block = 'plasma'
+  []
+
+  [gravity]
+    type = INSADGravityForce
+    variable = velocity
+    gravity = '0 -9.81 0'
+    block = 'plasma'
+  []
+
+  [supg]
+    type = INSADMomentumSUPG
+    variable = velocity
+    velocity = velocity
+    block = 'plasma'
+  []
+
+  [pspg]
+    type = INSADMassPSPG
+    variable = p
   []
 []
 
@@ -107,17 +127,17 @@
     function_y = 'inlet_func'
   []
 
-  [no_bc]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'axis_of_symmetry atmosphere'
-  []
+  # [no_bc]
+  #   type = INSADMomentumNoBCBC
+  #   variable = velocity
+  #   pressure = p
+  #   boundary = 'target'
+  # []
 
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode upper_atmosphere target'
+    boundary = 'electrode atmosphere'
     function_x = 0
     function_y = 0
   []
@@ -211,10 +231,11 @@
   []
 
   [ins_mat]
-    type = INSADMaterial
+    type = INSADTauMaterial
     velocity = velocity
     pressure = p
     block = 'plasma'
+    alpha = 1
   []
 []
 
@@ -225,6 +246,38 @@
     execute_on = linear
   []
 []
+
+[Preconditioning]
+  #  active = FSP
+  #  [FSP]
+  #    type = FSP
+  #    # It is the starting point of splitting
+  #    topsplit = 'up' # 'up' should match the following block name
+  #    [up]
+  #      splitting = 'u p' # 'u' and 'p' are the names of subsolvers
+  #      splitting_type  = schur
+  #      petsc_options_iname = '-pc_fieldsplit_schur_fact_type  -pc_fieldsplit_schur_precondition -ksp_gmres_restart -ksp_rtol -ksp_type'
+  #      petsc_options_value = 'full                            selfp                             300                1e-4      fgmres'
+  #    []
+  #    [u]
+  #      vars = 'velocity lambda'
+  #      petsc_options_iname = '-pc_type -pc_hypre_type -ksp_type -ksp_rtol -ksp_gmres_restart -ksp_pc_side'
+  #      petsc_options_value = 'hypre    boomeramg      gmres    5e-1      300                 right'
+  #    []
+  #    [p]
+  #      vars = 'p'
+  #      petsc_options_iname = '-ksp_type -ksp_gmres_restart -ksp_rtol -pc_type -ksp_pc_side'
+  #      petsc_options_value = 'gmres    300                5e-1      jacobi    right'
+  #    []
+  #  []
+  #  [SMP]
+  #    type = SMP
+  #    full = true
+  #    petsc_options_iname = '-pc_type -pc_factor_shift_type'
+  #    petsc_options_value = 'lu       NONZERO'
+  #  []
+ []
+
 
 [Preconditioning]
   [SMP]
@@ -239,9 +292,11 @@
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount  -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-9 superlu_dists'
   nl_max_its = 50
-  nl_rel_tol = 5e-08
+  # nl_rel_tol = 5e-08
   automatic_scaling = true
+  compute_scaling_once = false
 []
+
 [Outputs]
   console = true
   [out]
