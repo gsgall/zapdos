@@ -23,18 +23,18 @@
     block = 'plasma'
   []
 
-  [lambda]
-    family = SCALAR
-    order = FIRST
-  []
+  # [lambda]
+  #   family = SCALAR
+  #   order = FIRST
+  # []
 []
 
 [Kernels]
-  [mean_zero_pressure]
-    type = ScalarLagrangeMultiplier
-    variable = p
-    lambda = lambda
-  []
+  # [mean_zero_pressure]
+  #   type = ScalarLagrangeMultiplier
+  #   variable = p
+  #   lambda = lambda
+  # []
 
   [mass]
     type = INSADMass
@@ -80,21 +80,20 @@
     velocity = velocity
     block = 'plasma'
   []
-
-  [pspg]
-    type = INSADMassPSPG
-    variable = p
-  []
+  # [pspg]
+  #   type = INSADMassPSPG
+  #   variable = p
+  # []
 []
 
-[ScalarKernels]
-  [mean_zero_pressure_lm]
-    type = AverageValueConstraint
-    variable = lambda
-    pp_name = pressure_integral
-    value = 0
-  []
-[]
+# [ScalarKernels]
+#   [mean_zero_pressure_lm]
+#     type = AverageValueConstraint
+#     variable = lambda
+#     pp_name = pressure_integral
+#     value = 0
+#   []
+# []
 
 [AuxVariables]
   [vel_x]
@@ -134,29 +133,27 @@
   []
 
   [no_bc]
-    type = ADVectorOutflowBC
+    type = INSADMomentumNoBCBC
     variable = velocity
-    # pressure = p
+    pressure = p
     boundary = 'target'
   []
 
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode atmosphere upper_atmosphere'
+    boundary = 'electrode atmosphere'
     function_x = 0
     function_y = 0
   []
 
-  # [pressure_pin]
-  #   type = DirichletBC
-  #   variable = p
-  #   # boundary = 'upper_atmosphere'
-  #   boundary = 'pressure_pin'
-  #   # boundary = 'target'
-  #   value = ${pressure}
-  #   preset = false
-  # []
+  [pressure_pin]
+    type = DirichletBC
+    variable = p
+    boundary =
+    value = 0.0
+    preset = false
+  []
 []
 
 [Functions]
@@ -182,7 +179,7 @@
     # other dimensions in m
     symbol_names = 'flow_rate mins_to_sec l_to_m3'
     symbol_values = '1.0      60          1e3'
-    expression = 'flow_rate / (l_to_m3 * mins_to_sec)'
+    expression = 'flow_rate */ (l_to_m3 * mins_to_sec)'
   []
 
   [rad_eff]
@@ -255,19 +252,40 @@
   []
 []
 
-[Postprocessors]
-  [pressure_integral]
-    type = ElementIntegralVariablePostprocessor
-    variable = p
-    execute_on = linear
-  []
-[]
+# [Postprocessors]
+#   [pressure_integral]
+#     type = ElementIntegralVariablePostprocessor
+#     variable = p
+#     execute_on = linear
+#   []
+# []
 
 [Preconditioning]
-  [SMP]
-    type = SMP
-    full = true
-    solve_type = 'NEWTON'
+  # [SMP]
+  #   type = SMP
+  #   full = true
+  #   solve_type = 'NEWTON'
+  # []
+  [FSP]
+    type = FSP
+    topsplit = 'all'
+    [all]
+      splitting = 'mom mass'
+      splitting_type = schur
+      schur_type = full
+      petsc_options_iname = '-pc_fieldsplit_schur_fact_type -pc_fieldsplit_schur_precondition'
+      petsc_options_value = 'full selfp '
+    []
+    [mom]
+      vars = 'velocity'
+      petsc_options_iname = '-ksp_type -pc_type -sub_pc_type -sub_ksp_type'
+      petsc_options_value = ' preonly  asm      jacobi          preonly'
+    []
+    [mass]
+      vars = 'pressure'
+      petsc_options_iname = '-ksp_type -pc_type -pc_hypre_type '
+      petsc_options_value = ' preonly   hypre  boomeramg'
+    []
   []
 []
 

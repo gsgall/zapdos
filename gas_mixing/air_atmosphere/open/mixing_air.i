@@ -14,7 +14,7 @@ helium_fraction = 0.0000
 
 [Variables]
   [velocity]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE_VEC
     block = 'plasma'
     # scaling =
@@ -177,11 +177,10 @@ helium_fraction = 0.0000
 
 [BCs]
   [w_he_inlet]
-    type = ADInflowBC
+    type = DirichletBC
     boundary = 'inlet'
     variable = w_he
     value = 1
-    velocity = velocity
   []
 
   [w_he_atmosphere]
@@ -193,9 +192,9 @@ helium_fraction = 0.0000
   []
 
   [w_he_outflow]
-    type = ADOutflowBC
+    type = AdvectionBC
     variable = w_he
-    velocity = velocity
+    velocity_vector = velocity
     boundary = 'target'
   []
 
@@ -207,17 +206,17 @@ helium_fraction = 0.0000
     function_y = 'inlet_func'
   []
 
-  [no_bc]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'axis_of_symmetry target '
-  []
+  # [no_bc]
+  #   type = INSADMomentumNoBCBC
+  #   variable = velocity
+  #   pressure = p
+  #   boundary = 'axis_of_symmetry target '
+  # []
 
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode atmosphere upper_atmosphere'
+    boundary = 'electrode atmosphere'
     function_x = 0
     function_y = 0
   []

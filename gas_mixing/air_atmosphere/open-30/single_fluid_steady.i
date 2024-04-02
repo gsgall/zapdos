@@ -12,7 +12,7 @@
 
 [Variables]
   [velocity]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE_VEC
     block = 'plasma'
   []
@@ -23,18 +23,19 @@
     block = 'plasma'
   []
 
-  # [lambda]
-  #   family = SCALAR
-  #   order = FIRST
-  # []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+    block = 'plasma'
+  []
 []
 
 [Kernels]
-  # [mean_zero_pressure]
-  #   type = ScalarLagrangeMultiplier
-  #   variable = p
-  #   lambda = lambda
-  # []
+  [mean_zero_pressure]
+    type = ScalarLagrangeMultiplier
+    variable = p
+    lambda = lambda
+  []
 
   [mass]
     type = INSADMass
@@ -80,14 +81,14 @@
   []
 []
 
-# [ScalarKernels]
-#   [mean_zero_pressure_lm]
-#     type = AverageValueConstraint
-#     variable = lambda
-#     pp_name = pressure_integral
-#     value = 0
-#   []
-# []
+[ScalarKernels]
+  [mean_zero_pressure_lm]
+    type = AverageValueConstraint
+    variable = lambda
+    pp_name = pressure_integral
+    value = 0
+  []
+[]
 
 [AuxVariables]
   [vel_x]
@@ -126,28 +127,19 @@
     function_y = 'inlet_func'
   []
 
-  [no_bc]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'target'
-  []
+  # [no_bc]
+  #   type = INSADMomentumNoBCBC
+  #   variable = velocity
+  #   pressure = p
+  #   boundary = 'target'
+  # []
 
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode atmosphere upper_atmosphere'
+    boundary = 'electrode atmosphere'
     function_x = 0
     function_y = 0
-  []
-
-  [pressure_pin]
-    type = DirichletBC
-    variable = p
-    # boundary = 'upper_atmosphere'
-    boundary = 'target'
-    value = 0
-    preset = false
   []
 []
 
@@ -189,7 +181,7 @@
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate / (channel_width * channel_depth) * 2'
+    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]
@@ -247,13 +239,45 @@
   []
 []
 
-# [Postprocessors]
-#   [pressure_integral]
-#     type = ElementIntegralVariablePostprocessor
-#     variable = p
-#     execute_on = linear
-#   []
-# []
+[Postprocessors]
+  [pressure_integral]
+    type = ElementIntegralVariablePostprocessor
+    variable = p
+    execute_on = linear
+  []
+[]
+
+[Preconditioning]
+  #  active = FSP
+  #  [FSP]
+  #    type = FSP
+  #    # It is the starting point of splitting
+  #    topsplit = 'up' # 'up' should match the following block name
+  #    [up]
+  #      splitting = 'u p' # 'u' and 'p' are the names of subsolvers
+  #      splitting_type  = schur
+  #      petsc_options_iname = '-pc_fieldsplit_schur_fact_type  -pc_fieldsplit_schur_precondition -ksp_gmres_restart -ksp_rtol -ksp_type'
+  #      petsc_options_value = 'full                            selfp                             300                1e-4      fgmres'
+  #    []
+  #    [u]
+  #      vars = 'velocity lambda'
+  #      petsc_options_iname = '-pc_type -pc_hypre_type -ksp_type -ksp_rtol -ksp_gmres_restart -ksp_pc_side'
+  #      petsc_options_value = 'hypre    boomeramg      gmres    5e-1      300                 right'
+  #    []
+  #    [p]
+  #      vars = 'p'
+  #      petsc_options_iname = '-ksp_type -ksp_gmres_restart -ksp_rtol -pc_type -ksp_pc_side'
+  #      petsc_options_value = 'gmres    300                5e-1      jacobi    right'
+  #    []
+  #  []
+  #  [SMP]
+  #    type = SMP
+  #    full = true
+  #    petsc_options_iname = '-pc_type -pc_factor_shift_type'
+  #    petsc_options_value = 'lu       NONZERO'
+  #  []
+ []
+
 
 [Preconditioning]
   [SMP]
@@ -265,12 +289,12 @@
 
 [Executioner]
   type = Steady
-  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
+  petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount  -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-9 superlu_dists'
-  # line_search = none
   nl_max_its = 50
   # nl_rel_tol = 5e-08
   automatic_scaling = true
+  compute_scaling_once = false
 []
 
 [Outputs]
