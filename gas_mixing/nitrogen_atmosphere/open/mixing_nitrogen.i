@@ -207,17 +207,10 @@ helium_fraction = 0.0000
     function_y = 'inlet_func'
   []
 
-  [no_bc]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'axis_of_symmetry target '
-  []
-
   [no_slip]
     type = VectorFunctionDirichletBC
     variable = velocity
-    boundary = 'electrode atmosphere upper_atmosphere'
+    boundary = 'electrode atmosphere'
     function_x = 0
     function_y = 0
   []
@@ -261,7 +254,7 @@ helium_fraction = 0.0000
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate / (channel_width * channel_depth)'
+    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]
@@ -328,9 +321,9 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'rho_he rho_air rho_nitrogen rho_oxygen'
     constant_expressions = '0.1598  1.293 1.126 1.283'
-    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 1 + rho_oxygen * 0)'
+    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 1.0 + rho_oxygen * 0)'
     output_properties = 'rho'
-    outputs = 'out'
+    # outputs = 'out'
     block = 'plasma'
   []
   # viscosities from https://www.engineeringtoolbox.com/gases-absolute-dynamic-viscosity-d_1888.html
@@ -341,9 +334,9 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'mu_he mu_air mu_nitrogen mu_oxygen'
     constant_expressions = '1.96e-5 1.82e-5 1.76e-5 2.04e-5'
-    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 1 + mu_oxygen * 0.0)'
+    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 1.0 + mu_oxygen * 0)'
     output_properties = 'mu'
-    outputs = 'out'
+    # outputs = 'out'
     block = 'plasma'
   []
 []
@@ -392,15 +385,5 @@ helium_fraction = 0.0000
   console = true
   [out]
     type = Exodus
-  []
-
-  [out_nl]
-    type = Exodus
-    execute_on = 'NONLINEAR'
-  []
-
-  [out_l]
-    type = Exodus
-    execute_on = 'LINEAR'
   []
 []

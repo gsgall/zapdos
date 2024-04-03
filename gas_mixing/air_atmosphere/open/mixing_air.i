@@ -14,7 +14,7 @@ helium_fraction = 0.0000
 
 [Variables]
   [velocity]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE_VEC
     block = 'plasma'
     # scaling =
@@ -177,10 +177,11 @@ helium_fraction = 0.0000
 
 [BCs]
   [w_he_inlet]
-    type = DirichletBC
+    type = ADInflowBC
     boundary = 'inlet'
     variable = w_he
     value = 1
+    velocity = velocity
   []
 
   [w_he_atmosphere]
@@ -192,9 +193,9 @@ helium_fraction = 0.0000
   []
 
   [w_he_outflow]
-    type = AdvectionBC
+    type = ADOutflowBC
     variable = w_he
-    velocity_vector = velocity
+    velocity = velocity
     boundary = 'target'
   []
 
@@ -205,13 +206,6 @@ helium_fraction = 0.0000
     function_x = 0
     function_y = 'inlet_func'
   []
-
-  # [no_bc]
-  #   type = INSADMomentumNoBCBC
-  #   variable = velocity
-  #   pressure = p
-  #   boundary = 'axis_of_symmetry target '
-  # []
 
   [no_slip]
     type = VectorFunctionDirichletBC
@@ -260,7 +254,7 @@ helium_fraction = 0.0000
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate / (channel_width * channel_depth)'
+    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]
@@ -329,7 +323,7 @@ helium_fraction = 0.0000
     constant_expressions = '0.1598  1.293 1.126 1.283'
     expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 0.8 + rho_oxygen * 0.2)'
     output_properties = 'rho'
-    outputs = 'out'
+    # outputs = 'out'
     block = 'plasma'
   []
   # viscosities from https://www.engineeringtoolbox.com/gases-absolute-dynamic-viscosity-d_1888.html
@@ -342,7 +336,7 @@ helium_fraction = 0.0000
     constant_expressions = '1.96e-5 1.82e-5 1.76e-5 2.04e-5'
     expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 0.8 + mu_oxygen * 0.2)'
     output_properties = 'mu'
-    outputs = 'out'
+    # outputs = 'out'
     block = 'plasma'
   []
 []
