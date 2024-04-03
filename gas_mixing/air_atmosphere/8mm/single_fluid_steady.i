@@ -12,7 +12,7 @@
 
 [Variables]
   [velocity]
-    order = SECOND
+    order = FIRST
     family = LAGRANGE_VEC
     block = 'plasma'
   []
@@ -58,6 +58,25 @@
     variable = velocity
     pressure = p
     block = 'plasma'
+  []
+
+  [gravity]
+    type = INSADGravityForce
+    variable = velocity
+    gravity = '0 -9.81 0'
+    block = 'plasma'
+  []
+
+  [supg]
+    type = INSADMomentumSUPG
+    variable = velocity
+    velocity = velocity
+    block = 'plasma'
+  []
+
+  [pspg]
+    type = INSADMassPSPG
+    variable = p
   []
 []
 
@@ -107,12 +126,12 @@
     function_y = 'inlet_func'
   []
 
-  [no_bc]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'axis_of_symmetry atmosphere'
-  []
+  # [no_bc]
+  #   type = INSADMomentumNoBCBC
+  #   variable = velocity
+  #   pressure = p
+  #   boundary = 'axis_of_symmetry atmosphere'
+  # []
 
   [no_slip]
     type = VectorFunctionDirichletBC
@@ -211,10 +230,11 @@
   []
 
   [ins_mat]
-    type = INSADMaterial
+    type = INSADTauMaterial
     velocity = velocity
     pressure = p
     block = 'plasma'
+    alpha = 1
   []
 []
 
@@ -239,8 +259,9 @@
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount  -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-9 superlu_dists'
   nl_max_its = 50
-  nl_rel_tol = 5e-08
+  # nl_rel_tol = 5e-08
   automatic_scaling = true
+  compute_scaling_once = false
 []
 [Outputs]
   console = true
