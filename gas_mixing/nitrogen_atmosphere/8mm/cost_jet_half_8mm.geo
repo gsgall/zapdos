@@ -28,7 +28,7 @@ target_width = 1 * inch_to_m;
 target_height = 4 * mm_to_m;
 
 // atmosphere for ample mixing space
-x_buffer = 25 * mm_to_m;
+x_buffer = 15 * mm_to_m;
 y_buffer = -4 * mm_to_m;
 // rounding corners that break simulations
 round_radius = 0.09* mm_to_m;

@@ -207,12 +207,12 @@ helium_fraction = 0.0000
     function_y = 'inlet_func'
   []
 
-  [no_bc]
-    type = INSADMomentumNoBCBC
-    variable = velocity
-    pressure = p
-    boundary = 'upper_atmosphere'
-  []
+  # [no_bc]
+  #   type = INSADMomentumNoBCBC
+  #   variable = velocity
+  #   pressure = p
+  #   boundary = 'upper_atmosphere'
+  # []
 
   [no_slip]
     type = VectorFunctionDirichletBC
@@ -261,7 +261,7 @@ helium_fraction = 0.0000
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate / (channel_width * channel_depth)'
+    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]
@@ -328,9 +328,9 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'rho_he rho_air rho_nitrogen rho_oxygen'
     constant_expressions = '0.1598  1.293 1.126 1.283'
-    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 1 + rho_oxygen * 0)'
+    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 1.0 + rho_oxygen * 0.0)'
     output_properties = 'rho'
-    outputs = 'out'
+    # outputs = 'out'
     block = 'plasma'
   []
   # viscosities from https://www.engineeringtoolbox.com/gases-absolute-dynamic-viscosity-d_1888.html
@@ -341,9 +341,9 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'mu_he mu_air mu_nitrogen mu_oxygen'
     constant_expressions = '1.96e-5 1.82e-5 1.76e-5 2.04e-5'
-    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 1 + mu_oxygen * 0.0)'
+    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 1.0 + mu_oxygen * 0.0)'
     output_properties = 'mu'
-    outputs = 'out'
+    # outputs = 'out'
     block = 'plasma'
   []
 []
@@ -370,7 +370,7 @@ helium_fraction = 0.0000
   petsc_options_iname = '-pc_type -pc_factor_shift_type -pc_factor_shift_amount -pc_factor_mat_solver'
   petsc_options_value = 'lu NONZERO 1.e-9 superlu_dists'
   line_search = 'none'
-  nl_rel_tol = 5e-08
+  # nl_rel_tol = 5e-08
   nl_max_its = 15
   l_max_its = 300
   [TimeStepper]
@@ -380,7 +380,7 @@ helium_fraction = 0.0000
     growth_factor = 1.2
     optimal_iterations = 10
   []
-  end_time = 5.8
+  # end_time = 5.8
   steady_state_detection = true
   steady_state_tolerance = 1e-05
   automatic_scaling = true
@@ -395,13 +395,13 @@ helium_fraction = 0.0000
     type = Exodus
   []
 
-  [out_nl]
-    type = Exodus
-    execute_on = 'NONLINEAR'
-  []
+  # [out_nl]
+  #   type = Exodus
+  #   execute_on = 'NONLINEAR'
+  # []
 
-  [out_l]
-    type = Exodus
-    execute_on = 'LINEAR'
-  []
+  # [out_l]
+  #   type = Exodus
+  #   execute_on = 'LINEAR'
+  # []
 []
