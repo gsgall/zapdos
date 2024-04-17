@@ -166,7 +166,7 @@
     # other dimensions in m
     symbol_names = 'flow_rate mins_to_sec l_to_m3'
     symbol_values = '1.0      60          1e3'
-    expression = 'flow_rate / (l_to_m3 * mins_to_sec)'
+    expression = '2 * flow_rate / (l_to_m3 * mins_to_sec)'
   []
 
   [rad_eff]
@@ -181,7 +181,7 @@
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
+    expression = 'flow_rate / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]

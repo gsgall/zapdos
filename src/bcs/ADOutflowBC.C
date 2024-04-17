@@ -28,5 +28,8 @@ ADOutflowBC::ADOutflowBC(const InputParameters & parameters)
 ADReal
 ADOutflowBC::computeQpResidual()
 {
+  if (_velocity[_qp] * _normals[_qp] < 0)
+    return 0.0;
+    
   return _test[_i][_qp] * _u[_qp] * _velocity[_qp] * _normals[_qp];
 }

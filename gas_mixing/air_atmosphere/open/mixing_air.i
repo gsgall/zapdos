@@ -29,7 +29,7 @@ helium_fraction = 0.0000
   []
 
   [w_he]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
     block = 'plasma'
     # scaling = 10
@@ -62,10 +62,11 @@ helium_fraction = 0.0000
   []
 
   [w_he_advection]
-    type = ConservativeAdvection
+    type = ScalarAdvection
+    # type = ConservativeAdvection
     velocity = velocity
     variable = w_he
-    upwinding_type = full
+    # upwinding_type = full
   []
 
   [mass]
@@ -191,12 +192,12 @@ helium_fraction = 0.0000
     preset = false
   []
 
-  [w_he_outflow]
-    type = ADOutflowBC
-    variable = w_he
-    velocity = velocity
-    boundary = 'target'
-  []
+  # [w_he_outflow]
+  #   type = ADOutflowBC
+  #   variable = w_he
+  #   velocity = velocity
+  #   boundary = 'target'
+  # []
 
   [inlet]
     type = VectorFunctionDirichletBC
@@ -238,7 +239,7 @@ helium_fraction = 0.0000
     # other dimensions in m
     symbol_names = 'flow_rate mins_to_sec l_to_m3'
     symbol_values = '1.0      60          1e3'
-    expression = 'flow_rate / (l_to_m3 * mins_to_sec)'
+    expression = '2 * flow_rate / (l_to_m3 * mins_to_sec)'
   []
 
   [rad_eff]
@@ -253,7 +254,7 @@ helium_fraction = 0.0000
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
+    expression = 'flow_rate / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]
@@ -311,7 +312,7 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'D_he D_nitrogen D_oxygen'
     constant_expressions = '1.68e-4 0.678e-4 0.7361e-4'
-    expression = 'w_he * D_he + ( 1 - w_he ) * (D_nitrogen * 0.8 + D_oxygen * 0.2)'
+    expression = '(D_nitrogen * 0.8 + D_oxygen * 0.2)'
     output_properties = 'D'
     # outputs = 'out'
     block = 'plasma'
