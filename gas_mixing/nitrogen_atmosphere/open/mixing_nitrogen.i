@@ -29,7 +29,7 @@ helium_fraction = 0.0000
   []
 
   [w_he]
-    order = FIRST
+    order = SECOND
     family = LAGRANGE
     block = 'plasma'
     # scaling = 10
@@ -62,10 +62,11 @@ helium_fraction = 0.0000
   []
 
   [w_he_advection]
-    type = ConservativeAdvection
+    type = ScalarAdvection
+    # type = ConservativeAdvection
     velocity = velocity
     variable = w_he
-    upwinding_type = full
+    # upwinding_type = full
   []
 
   [mass]
@@ -167,21 +168,20 @@ helium_fraction = 0.0000
     function_z = 'vel_z_ic'
   []
 
-  [w_he]
-    type = FunctionIC
-    variable = w_he
-    function = w_he_ic
-    block = 'plasma'
-  []
+  # [w_he]
+  #   type = FunctionIC
+  #   variable = w_he
+  #   function = w_he_ic
+  #   block = 'plasma'
+  # []
 []
 
 [BCs]
   [w_he_inlet]
-    type = ADInflowBC
+    type = DirichletBC
     boundary = 'inlet'
     variable = w_he
     value = 1
-    velocity = velocity
   []
 
   [w_he_atmosphere]
@@ -192,12 +192,12 @@ helium_fraction = 0.0000
     preset = false
   []
 
-  [w_he_outflow]
-    type = ADOutflowBC
-    variable = w_he
-    velocity = velocity
-    boundary = 'target'
-  []
+  # [w_he_outflow]
+  #   type = ADOutflowBC
+  #   variable = w_he
+  #   velocity = velocity
+  #   boundary = 'target'
+  # []
 
   [inlet]
     type = VectorFunctionDirichletBC
@@ -239,7 +239,7 @@ helium_fraction = 0.0000
     # other dimensions in m
     symbol_names = 'flow_rate mins_to_sec l_to_m3'
     symbol_values = '1.0      60          1e3'
-    expression = 'flow_rate / (l_to_m3 * mins_to_sec)'
+    expression = '2 * flow_rate / (l_to_m3 * mins_to_sec)'
   []
 
   [rad_eff]
@@ -254,7 +254,7 @@ helium_fraction = 0.0000
     type = ParsedFunction
     symbol_names = 'flow_rate       channel_width channel_depth'
     symbol_values = 'flow_rate_m3_s 1e-3          1e-3'
-    expression = 'flow_rate * 2 / (channel_width * channel_depth)'
+    expression = 'flow_rate / (channel_width * channel_depth)'
   []
 
   [inlet_r_start]
@@ -285,14 +285,14 @@ helium_fraction = 0.0000
     expression = '-max_vel * ( ( x - inlet_r_start ) * ( x - inlet_r_end ) / ( ( inlet_r_center - inlet_r_start ) * ( inlet_r_center - inlet_r_end ) ) )'
   []
 
-  [w_he_ic]
-    type = ParsedFunction
-    symbol_names = 'inlet_func inlet_r_end inlet_r_start'
-    symbol_values = 'inlet_func inlet_r_end inlet_r_start'
-    expression = 'if (x > inlet_r_start & x < inlet_r_end + 1e-4 & y > 0.5e-3,
-                  1,
-                  ${helium_fraction})'
-  []
+  # [w_he_ic]
+  #   type = ParsedFunction
+  #   symbol_names = 'inlet_func inlet_r_end inlet_r_start'
+  #   symbol_values = 'inlet_func inlet_r_end inlet_r_start'
+  #   expression = 'if (x > inlet_r_start & x < inlet_r_end + 1e-4 & y > 0.5e-3,
+  #                 1,
+  #                 ${helium_fraction})'
+  # []
 []
 
 [Materials]
@@ -305,12 +305,18 @@ helium_fraction = 0.0000
   []
   # helium material properties
   # Diffusion coefficient from https://nvlpubs.nist.gov/nistpubs/jres/73a/jresv73an2p207_a1b.pdf
-  [diffusion_coeff]
-    type = ADGenericConstantMaterial
-    prop_names = 'D'
-    prop_values = '6.78e-5'
+    # Gas Temperature assumed to be 300K
+  [effective_diffusivity]
+    type = ADParsedMaterial
+    property_name = 'D'
+    coupled_variables = 'w_he'
+    constant_names = 'D_he D_nitrogen D_oxygen'
+    constant_expressions = '1.68e-4 0.678e-4 0.7361e-4'
+    expression = '(D_nitrogen)'
+    output_properties = 'D'
+    # outputs = 'out'
+    block = 'plasma'
   []
-
   # air density from https://www.earthdata.nasa.gov/topics/atmosphere/atmospheric-pressure/air-mass-density#:~:text=Pure%2C%20dry%20air%20has%20a,a%20pressure%20of%20101.325%20kPa.
   # helium density from https://www.engineeringtoolbox.com/helium-density-specific-weight-temperature-pressure-d_2090.html
   # nitrogen density from https://www.engineeringtoolbox.com/nitrogen-N2-density-specific-weight-temperature-pressure-d_2039.html
@@ -321,7 +327,7 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'rho_he rho_air rho_nitrogen rho_oxygen'
     constant_expressions = '0.1598  1.293 1.126 1.283'
-    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen * 1.0 + rho_oxygen * 0)'
+    expression = 'w_he * rho_he + ( 1 - w_he ) * (rho_nitrogen)'
     output_properties = 'rho'
     # outputs = 'out'
     block = 'plasma'
@@ -334,7 +340,7 @@ helium_fraction = 0.0000
     coupled_variables = 'w_he'
     constant_names = 'mu_he mu_air mu_nitrogen mu_oxygen'
     constant_expressions = '1.96e-5 1.82e-5 1.76e-5 2.04e-5'
-    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen * 1.0 + mu_oxygen * 0)'
+    expression = 'w_he * mu_he + ( 1 - w_he ) * (mu_nitrogen)'
     output_properties = 'mu'
     # outputs = 'out'
     block = 'plasma'

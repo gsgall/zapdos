@@ -28,7 +28,7 @@ target_width = 1 * inch_to_m;
 target_height = 4 * mm_to_m;
 
 // atmosphere for ample mixing space
-x_buffer = 5 * mm_to_m;
+x_buffer = 16 * mm_to_m;
 y_buffer = 0 * mm_to_m;
 // rounding corners that break simulations
 round_radius = 0.09* mm_to_m;
@@ -140,22 +140,22 @@ Field[1].YMax = inner_channel_length;
 Field[1].Thickness = 4 * mm_to_m;
 // // // electrode refinement
 Field[2] = Box;
-Field[2].VIn = max * electrode * 1.3;
+Field[2].VIn = max * electrode;
 Field[2].VOut = max;
 Field[2].XMin = 0;
-Field[2].XMax = (fin_width / 3);
-Field[2].YMin = -distance_to_target +bounadry_refine_start;
+Field[2].XMax = inner_channel_start_x * 3;
+Field[2].YMin = -distance_to_target;
 Field[2].YMax = 0;
-Field[2].Thickness = 20 * mm_to_m;
+Field[2].Thickness =  4 * mm_to_m;
 // electrode refinement
-Field[3] = Box;
-Field[3].VIn = max * electrode * 1.3;
-Field[3].VOut = max;
-Field[3].XMin = 0;
-Field[3].XMax = (fin_width / 4);
-Field[3].YMin = -distance_to_target;
-Field[3].YMax = -distance_to_target + bounadry_refine_start;
-Field[3].Thickness = 20 * mm_to_m;
+// Field[3] = Box;
+// Field[3].VIn = max * electrode;
+// Field[3].VOut = max;
+// Field[3].XMin = 0;
+// Field[3].XMax = (fin_width / 4);
+// Field[3].YMin = -distance_to_target;
+// Field[3].YMax = -distance_to_target + bounadry_refine_start;
+// Field[3].Thickness = 4 * mm_to_m;
 // // upper atomsphere refinement
 // Field[4] = Box;
 // Field[4].VIn = max * corner / 2;
@@ -167,7 +167,7 @@ Field[3].Thickness = 20 * mm_to_m;
 // Field[4].Thickness = 20 * mm_to_m;
 
 Field[20] = Min;
-Field[20].FieldsList = {1, 2, 3};
+Field[20].FieldsList = {1, 2};
 Background Field = 20;
 
 Mesh.ElementOrder = 2;
