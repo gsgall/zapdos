@@ -2,7 +2,7 @@ mm_to_m = 1e-3;
 inch_to_mm = 25.4;
 inch_to_m = inch_to_mm * mm_to_m;
 
-inner_channel_length = 30 * mm_to_m;
+inner_channel_length = 2 * mm_to_m;
 total_width = 4.5 * mm_to_m;
 angled_width = 3.5 * mm_to_m;
 
@@ -28,8 +28,8 @@ target_width = 1 * inch_to_m;
 target_height = 4 * mm_to_m;
 
 // atmosphere for ample mixing space
-x_buffer = 25 * mm_to_m;
-y_buffer = -4 * mm_to_m;
+x_buffer = 20 * mm_to_m;
+y_buffer = 20 * mm_to_m;
 // rounding corners that break simulations
 round_radius = 0.09* mm_to_m;
 
@@ -156,19 +156,19 @@ Field[2].YMin = -distance_to_target;
 Field[2].YMax = angled_length + 2 * mm_to_m;
 Field[2].Thickness = 20 * mm_to_m;
 
-// upper right box refine
-Field[7] = Box;
-Field[7].VIn = max * corner;
-Field[7].VOut = max;
-Field[7].XMin = (target_width + x_buffer) - box_width;
-Field[7].XMax = (target_width + x_buffer);
-Field[7].YMin = outer_channel_length + y_buffer;
-Field[7].YMax = outer_channel_length + y_buffer - box_width;
-Field[7].Thickness = 4 * mm_to_m;
+// // upper right box refine
+// Field[7] = Box;
+// Field[7].VIn = max * corner;
+// Field[7].VOut = max;
+// Field[7].XMin = (target_width + x_buffer) - box_width;
+// Field[7].XMax = (target_width + x_buffer);
+// Field[7].YMin = outer_channel_length + y_buffer;
+// Field[7].YMax = outer_channel_length + y_buffer - box_width;
+// Field[7].Thickness = 4 * mm_to_m;
 
 // upper right box refine near electrode
 Field[8] = Box;
-Field[8].VIn = max * corner / 1.3;
+Field[8].VIn = max * corner * 1.5;
 Field[8].VOut = max;
 Field[8].XMin = (outer_channel_x);
 Field[8].XMax = (outer_channel_x + fin_width);
@@ -220,7 +220,7 @@ Field[13].Thickness = 1 * mm_to_m;
 
 
 Field[20] = Min;
-Field[20].FieldsList = {1, 2, 7, 8, 9, 10,11, 13};
+Field[20].FieldsList = {1, 2, 8, 9, 10,11, 13};
 Background Field = 20;
 
 Mesh.ElementOrder = 2;

@@ -61,11 +61,18 @@ helium_fraction = 0.0000
     block = 'plasma'
   []
 
+  # [w_he_advection]
+  #   type = ConservativeAdvection
+  #   velocity = velocity
+  #   variable = w_he
+  #   upwinding_type = full
+  # []
   [w_he_advection]
-    type = ConservativeAdvection
+    type = ScalarAdvection
+    # type = ConservativeAdvection
     velocity = velocity
     variable = w_he
-    upwinding_type = full
+    # upwinding_type = full
   []
 
   [mass]
@@ -167,21 +174,21 @@ helium_fraction = 0.0000
     function_z = 'vel_z_ic'
   []
 
-  [w_he]
-    type = FunctionIC
-    variable = w_he
-    function = w_he_ic
-    block = 'plasma'
-  []
+  # [w_he]
+  #   type = FunctionIC
+  #   variable = w_he
+  #   function = w_he_ic
+  #   block = 'plasma'
+  # []
 []
 
 [BCs]
   [w_he_inlet]
-    type = ADInflowBC
+    type = DirichletBC
     boundary = 'inlet'
     variable = w_he
     value = 1
-    velocity = velocity
+    # velocity = velocity
   []
 
   [w_he_atmosphere]
@@ -192,12 +199,12 @@ helium_fraction = 0.0000
     preset = false
   []
 
-  [w_he_outflow]
-    type = ADOutflowBC
-    variable = w_he
-    velocity = velocity
-    boundary = 'upper_atmosphere'
-  []
+  # [w_he_outflow]
+  #   type = ADOutflowBC
+  #   variable = w_he
+  #   velocity = velocity
+  #   boundary = 'upper_atmosphere'
+  # []
 
   [inlet]
     type = VectorFunctionDirichletBC
@@ -312,12 +319,17 @@ helium_fraction = 0.0000
   []
   # helium material properties
   # Diffusion coefficient from https://nvlpubs.nist.gov/nistpubs/jres/73a/jresv73an2p207_a1b.pdf
-  [diffusion_coeff]
-    type = ADGenericConstantMaterial
-    prop_names = 'D'
-    prop_values = '6.78e-5'
+  [effective_diffusivity]
+    type = ADParsedMaterial
+    property_name = 'D'
+    coupled_variables = 'w_he'
+    constant_names = 'D_he D_nitrogen D_oxygen'
+    constant_expressions = '1.68e-4 0.678e-4 0.7361e-4'
+    expression = '(D_nitrogen * 0.8 + D_oxygen * 0.2)'
+    output_properties = 'D'
+    # outputs = 'out'
+    block = 'plasma'
   []
-
   # air density from https://www.earthdata.nasa.gov/topics/atmosphere/atmospheric-pressure/air-mass-density#:~:text=Pure%2C%20dry%20air%20has%20a,a%20pressure%20of%20101.325%20kPa.
   # helium density from https://www.engineeringtoolbox.com/helium-density-specific-weight-temperature-pressure-d_2090.html
   # nitrogen density from https://www.engineeringtoolbox.com/nitrogen-N2-density-specific-weight-temperature-pressure-d_2039.html
@@ -382,7 +394,7 @@ helium_fraction = 0.0000
   []
   # end_time = 5.8
   steady_state_detection = true
-  steady_state_tolerance = 1e-05
+  steady_state_tolerance = 1e-5
   automatic_scaling = true
   compute_scaling_once = false
   # dtmax = 1e-5
