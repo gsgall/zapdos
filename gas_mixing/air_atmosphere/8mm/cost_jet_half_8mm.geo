@@ -132,14 +132,14 @@ Physical Surface("plasma") = {201};
 
 
 // add refinements
-max = 8e-1 * mm_to_m;
+max = 5e-1 * mm_to_m;
 channel = 1 / 7;
 electrode = 1 / 6;
 corner = 1/7;
 box_width =  1 * mm_to_m;
 // inner channel refinement
 Field[1] = Box;
-Field[1].VIn = max * channel / 2;
+Field[1].VIn = max * channel;
 Field[1].VOut = max;
 Field[1].XMin = -inner_channel_start_x;
 Field[1].XMax = inner_channel_start_x;
@@ -167,60 +167,61 @@ Field[2].Thickness = 20 * mm_to_m;
 // Field[7].Thickness = 4 * mm_to_m;
 
 // upper right box refine near electrode
-Field[8] = Box;
-Field[8].VIn = max * corner * 1.5;
-Field[8].VOut = max;
-Field[8].XMin = (outer_channel_x);
-Field[8].XMax = (outer_channel_x + fin_width);
-Field[8].YMin = outer_channel_length + y_buffer;
-Field[8].YMax = outer_channel_length + y_buffer - 3 * box_width;
-Field[8].Thickness = 8 * mm_to_m;
+// Field[8] = Box;
+// Field[8].VIn = max * corner * 1.5;
+// Field[8].VOut = max;
+// Field[8].XMin = (outer_channel_x);
+// Field[8].XMax = (outer_channel_x + fin_width);
+// Field[8].YMin = outer_channel_length + y_buffer;
+// Field[8].YMax = outer_channel_length + y_buffer - 3 * box_width;
+// Field[8].Thickness = 8 * mm_to_m;
 
-// lower right corner refine
-Field[9] = Box;
-Field[9].VIn = max * corner;
-Field[9].VOut = max;
-Field[9].XMin = (target_width + x_buffer) - box_width;
-Field[9].XMax = (target_width + x_buffer);
-Field[9].YMin = -distance_to_target - target_height;
-Field[9].YMax = -distance_to_target - target_height + box_width;
-Field[9].Thickness = 4 * mm_to_m;
+// // lower right corner refine
+// Field[9] = Box;
+// Field[9].VIn = max * corner;
+// Field[9].VOut = max;
+// Field[9].XMin = (target_width + x_buffer) - box_width;
+// Field[9].XMax = (target_width + x_buffer);
+// Field[9].YMin = -distance_to_target - target_height;
+// Field[9].YMax = -distance_to_target - target_height + box_width;
+// Field[9].Thickness = 4 * mm_to_m;
 
-// corners near target right
-Field[10] = Box;
-Field[10].VIn = max * corner;
-Field[10].VOut = max;
-Field[10].XMin = (target_width);
-Field[10].XMax = (target_width) + box_width;
-Field[10].YMin = -distance_to_target - target_height;
-Field[10].YMax = -distance_to_target - target_height + box_width;
-Field[10].Thickness = 4 * mm_to_m;
-
-
-// refine near the transition from no BC to no slip
-Field[11] = Box;
-Field[11].VIn = max * corner;
-Field[11].VOut = max;
-Field[11].XMin = (outer_channel_x +fin_width - box_width / 2);
-Field[11].XMax = (outer_channel_x + fin_width + box_width/2);
-Field[11].YMin = outer_channel_length + y_buffer;
-Field[11].YMax = outer_channel_length + y_buffer - box_width;
-Field[11].Thickness = 4 * mm_to_m;
+// // corners near target right
+// Field[10] = Box;
+// Field[10].VIn = max * corner;
+// Field[10].VOut = max;
+// Field[10].XMin = (target_width);
+// Field[10].XMax = (target_width) + box_width;
+// Field[10].YMin = -distance_to_target - target_height;
+// Field[10].YMax = -distance_to_target - target_height + box_width;
+// Field[10].Thickness = 4 * mm_to_m;
 
 
-// upper right box refine
-Field[13] = Box;
-Field[13].VIn = max * corner * 2;
-Field[13].VOut = max;
-Field[13].XMin = (target_width + x_buffer) - box_width / 2;
-Field[13].XMax = (target_width + x_buffer);
-Field[13].YMin = -distance_to_target - target_height + box_width;
-Field[13].YMax = outer_channel_length + y_buffer - box_width;
-Field[13].Thickness = 1 * mm_to_m;
+// // refine near the transition from no BC to no slip
+// Field[11] = Box;
+// Field[11].VIn = max * corner;
+// Field[11].VOut = max;
+// Field[11].XMin = (outer_channel_x +fin_width - box_width / 2);
+// Field[11].XMax = (outer_channel_x + fin_width + box_width/2);
+// Field[11].YMin = outer_channel_length + y_buffer;
+// Field[11].YMax = outer_channel_length + y_buffer - box_width;
+// Field[11].Thickness = 4 * mm_to_m;
+
+
+// // upper right box refine
+// Field[13] = Box;
+// Field[13].VIn = max * corner * 2;
+// Field[13].VOut = max;
+// Field[13].XMin = (target_width + x_buffer) - box_width / 2;
+// Field[13].XMax = (target_width + x_buffer);
+// Field[13].YMin = -distance_to_target - target_height + box_width;
+// Field[13].YMax = outer_channel_length + y_buffer - box_width;
+// Field[13].Thickness = 1 * mm_to_m;
 
 
 Field[20] = Min;
-Field[20].FieldsList = {1, 2, 8, 9, 10,11, 13};
+// Field[20].FieldsList = {1, 2, 8, 9, 10,11, 13};
+Field[20].FieldsList = {1, 2};
 Background Field = 20;
 
 Mesh.ElementOrder = 2;
