@@ -16,25 +16,15 @@ InputParameters
 SakiyamaEnergySecondaryElectronBC::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
-  params.addRequiredParam<std::vector<std::string>>("se_coeff",
-                                                    "The secondary electron coefficient");
-  params.deprecateParam("se_coeff", "emission_coeffs", "06/01/2024");
   params.addRequiredParam<std::vector<std::string>>(
       "emission_coeffs",
       "The secondary electron emission coefficient for each ion provided in `ions`");
   params.addRequiredParam<bool>(
       "Tse_equal_Te", "The secondary electron temperature equal the electron temperature in eV");
   params.addParam<Real>(
-      "user_se_energy", 1.0, "The user's value of the secondary electron temperature in eV");
-  params.deprecateParam("user_se_energy", "secondary_electron_energy", "06/01/2024");
-  params.addParam<Real>("secondary_electron_energy", "The secondary electron temperature in eV");
-  params.addRequiredCoupledVar("em", "The electron density.");
-  params.deprecateCoupledVar("em", "electrons", "06/01/2024");
+      "secondary_electron_energy", 1.0, "The secondary electron temperature in eV");
   params.addRequiredCoupledVar("electrons", "The electron density in log form");
-  params.addRequiredCoupledVar("ip", "The ion density.");
-  params.deprecateCoupledVar("ip", "ions", "06/01/2024");
   params.addRequiredCoupledVar("ions", "A list of ion densities in log form");
-
   params.addRequiredParam<Real>("position_units", "Units of position.");
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
@@ -55,7 +45,7 @@ SakiyamaEnergySecondaryElectronBC::SakiyamaEnergySecondaryElectronBC(
     _se_coeff_names(getParam<std::vector<std::string>>("emission_coeffs")),
     // Coupled Variables
 
-    _em(adCoupledValue("em")),
+    _em(adCoupledValue("electrons")),
 
     _user_se_energy(getParam<Real>("secondary_electron_energy")),
     _a(0.5),

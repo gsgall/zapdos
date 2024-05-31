@@ -17,8 +17,6 @@ FieldEmissionBC::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
   params.addRequiredParam<Real>("r", "The reflection coefficient");
-  params.addRequiredCoupledVar("ip", "The ion density.");
-  params.deprecateCoupledVar("ip", "ions", "06/01/2024");
   params.addRequiredCoupledVar("ions", "A list of ion densities in log form");
   params.addRequiredParam<std::vector<std::string>>(
       "emission_coeffs",
@@ -38,7 +36,8 @@ FieldEmissionBC::FieldEmissionBC(const InputParameters & parameters)
 
     _r_units(1. / getParam<Real>("position_units")),
     _r(getParam<Real>("r")),
-    _num_ions(coupledComponents("ip")),
+    _num_ions(coupledComponents("ions")),
+    // Coupled Variables
 
     _muem(getADMaterialProperty<Real>("muem")),
     _massem(getMaterialProperty<Real>("massem")),

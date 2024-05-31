@@ -17,14 +17,9 @@ LymberopoulosElectronBC::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
   params.addRequiredParam<Real>("ks", "The recombination coefficient");
-  params.addRequiredParam<std::vector<Real>>("gamma", "The secondary electron coefficient");
-  params.deprecateParam("gamma", "emission_coeffs", "06/01/2024");
   params.addRequiredParam<std::vector<Real>>(
       "emission_coeffs", "The species-dependent secondary electron emission coefficients");
-  params.addRequiredCoupledVar("ion", "The ion density.");
-  params.deprecateCoupledVar("ion", "ions", "06/01/2024");
   params.addRequiredCoupledVar("ions", "A list of ion densities in log form");
-
   params.addRequiredParam<Real>("position_units", "Units of position.");
   params.addParam<std::string>("field_property_name",
                                "field_solver_interface_property",
@@ -58,10 +53,10 @@ LymberopoulosElectronBC::LymberopoulosElectronBC(const InputParameters & paramet
   // refers to a single ion species.
   for (unsigned int i = 0; i < _num_ions; ++i)
   {
-    _ion_var[i] = getVar("ion", i);
-    _ion[i] = &adCoupledValue("ion", i);
-    _muion[i] = &getADMaterialProperty<Real>("mu" + (*getVar("ion", i)).name());
-    _sgnion[i] = &getMaterialProperty<Real>("sgn" + (*getVar("ion", i)).name());
+    _ion_var[i] = getVar("ions", i);
+    _ion[i] = &adCoupledValue("ions", i);
+    _muion[i] = &getADMaterialProperty<Real>("mu" + (*getVar("ions", i)).name());
+    _sgnion[i] = &getMaterialProperty<Real>("sgn" + (*getVar("ions", i)).name());
   }
 }
 

@@ -16,13 +16,8 @@ InputParameters
 SakiyamaSecondaryElectronBC::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
-  params.addRequiredCoupledVar("ip", "The ion density.");
-  params.deprecateCoupledVar("ip", "ions", "06/01/2024");
   params.addRequiredCoupledVar("ions", "A list of ion densities in log form");
   params.addRequiredParam<Real>("position_units", "Units of position.");
-  params.addRequiredParam<std::vector<std::string>>(
-      "users_gamma", "A secondary electron emission coeff. only used for this BC.");
-  params.deprecateParam("users_gamma", "emission_coeffs", "06/01/2024");
   params.addRequiredParam<std::vector<std::string>>(
       "emission_coeffs", "A list of species-dependent secondary electron emission coefficients");
   params.addParam<std::string>("field_property_name",
