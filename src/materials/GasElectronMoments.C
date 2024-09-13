@@ -50,6 +50,8 @@ GasElectronMoments::validParams()
   params.addParam<Real>("user_T_gas", 300, "The gas temperature in Kelvin.");
   params.addCoupledVar("user_p_gas", "The gas pressure in Pascals.");
 
+  params.addParam<Real>("user_drive_freq", 0, "The drive frequency of the discharge.");
+
   params.addCoupledVar("em", "Species concentration needed to calculate the poisson source");
   params.addCoupledVar("mean_en", "The electron mean energy in log form.");
   params.addCoupledVar("ip", "The ion density.");
@@ -120,6 +122,11 @@ GasElectronMoments::GasElectronMoments(const InputParameters & parameters)
     _Source_term_coeff(declareProperty<Real>("Source_term_coeff")),
     _e(declareProperty<Real>("e")),
     _eps(declareProperty<Real>("eps")),
+
+    _mu_vacuum(declareADProperty<Real>("mu_vacuum")),
+    _drive_freq(getParam<Real>("user_drive_freq")),
+    _ang_freq(declareADProperty<Real>("ang_freq")),
+
     _Tem_lfa(declareProperty<Real>("Tem_lfa")),
     _Tip_lfa(declareProperty<Real>("Tip_lfa")),
     _k_boltz(declareProperty<Real>("k_boltz")),
@@ -213,6 +220,10 @@ GasElectronMoments::computeQpProperties()
                                   // Multiply by 3/2 to get mean_en
   _e[_qp] = 1.6e-19;
   _eps[_qp] = 8.85e-12;
+
+  _mu_vacuum[_qp] = 4 * M_PI * 1e-7;
+  _ang_freq[_qp] = 2 * M_PI * _drive_freq;
+  
   _sgnem[_qp] = -1.;
   _sgnmean_en[_qp] = -1.;
   _diffpotential[_qp] = _eps[_qp];

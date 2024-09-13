@@ -81,6 +81,11 @@ protected:
   MaterialProperty<Real> & _Source_term_coeff;
   MaterialProperty<Real> & _e;
   MaterialProperty<Real> & _eps;
+  
+  ADMaterialProperty<Real> & _mu_vacuum;
+  Real _drive_freq;
+  ADMaterialProperty<Real> & _ang_freq;
+  
   MaterialProperty<Real> & _Tem_lfa;
   MaterialProperty<Real> & _Tip_lfa;
   MaterialProperty<Real> & _k_boltz;
