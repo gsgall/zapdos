@@ -1,19 +1,26 @@
 #pragma once
 
 #include "ADMaterial.h"
+// #include "SplineInterpolation.h"
+#include "LinearInterpolation.h"
 
 /**
  *
  */
-class PlasmaDielectricConstant : public ADMaterial
+class ReduceEFieldDependentPlasmaDielectricConstant : public ADMaterial
 {
 public:
   static InputParameters validParams();
 
-  PlasmaDielectricConstant(const InputParameters & parameters);
+  ReduceEFieldDependentPlasmaDielectricConstant(const InputParameters & parameters);
 
 protected:
   virtual void computeQpProperties() override;
+
+  std::unique_ptr<LinearInterpolation> _nu_interpolation;
+  std::unique_ptr<LinearInterpolation> _temp_interpolation;
+
+  ADMaterialProperty<Real> & _sigma_pe_real;
 
   /// Value of dielectric constant, real component
   ADMaterialProperty<Real> & _eps_r_real;
@@ -42,8 +49,7 @@ protected:
   const Real _pi;
 
   /// Electron-neutral collision frequency (Hz)
-  const ADMaterialProperty<Real> & _nu;
-  const ADMaterialProperty<RealVectorValue> & _grad_nu;
+  const Real & _user_nu;
 
   /// Operating frequency (Hz)
   const Real & _frequency;
@@ -63,8 +69,11 @@ protected:
   /// Electron density second time derivative
   const ADVariableValue & _em_dot_dot;
 
-  const MaterialProperty<Real> & _N_A;
-  const MaterialProperty<Real> & _eps;
-  ADMaterialProperty<Real> & _sigma_pe_real;
-  ADMaterialProperty<Real> & _sigma_pe_imag;
+  const ADMaterialProperty<RealVectorValue> & _electric_field;
+
+  const MaterialProperty<Real> & _k_boltz;
+  const MaterialProperty<Real> & _T_gas;
+  const MaterialProperty<Real> & _p_gas;
+
+  ADMaterialProperty<Real> & _e_temp;
 };
