@@ -28,6 +28,7 @@ protected:
   const MaterialProperty<Real> & _kb;
   const unsigned int _num_ions;
   const std::vector<std::string> _se_coeff_names;
+  const ADMaterialProperty<RealVectorValue> & _electric_field;
   std::vector<const ADMaterialProperty<Real> *> _se_coeff;
   // Coupled variables
   const ADVariableValue & _mean_en;
@@ -42,7 +43,6 @@ protected:
   std::vector<const ADMaterialProperty<Real> *> _Tip;
   std::vector<const MaterialProperty<Real> *> _massip;
 
-  const ADMaterialProperty<RealVectorValue> & _electric_field;
 
   Real _a;
   Real _b;

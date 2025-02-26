@@ -32,7 +32,7 @@ protected:
   const MaterialProperty<Real> & _T_gas;
   const MaterialProperty<Real> & _p_gas;
 
-  const Real & _frequency;
   const Real _pi;
+  const Real & _frequency;
   const Real & _delta;
 };

@@ -25,6 +25,7 @@ protected:
   const Real _r_units;
   const unsigned int _num_ions;
   const std::vector<std::string> _se_coeff_names;
+  const ADMaterialProperty<RealVectorValue> & _electric_field;
   std::vector<const ADMaterialProperty<Real> *> _se_coeff;
   // Coupled variables
   std::vector<const ADVariableValue *> _ip;
@@ -34,5 +35,4 @@ protected:
 
   std::vector<const MaterialProperty<Real> *> _sgnip;
   std::vector<const ADMaterialProperty<Real> *> _muip;
-  const ADMaterialProperty<RealVectorValue> & _electric_field;
 };
