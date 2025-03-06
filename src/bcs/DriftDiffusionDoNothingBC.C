@@ -49,21 +49,6 @@ DriftDiffusionDoNothingBC::DriftDiffusionDoNothingBC(const InputParameters & par
 {
   if (!(isCoupled("potential") || parameters.isParamSetByUser("EField")))
     mooseError("You must either couple in a potential variable or set an EField.");
-
-  auto max_qps = _fe_problem.getMaxQps();
-  _user_diff.resize(max_qps);
-  _user_mu.resize(max_qps);
-  _user_sign.resize(max_qps);
-  if (!(isCoupled("potential")))
-    _minus_e_field.resize(max_qps);
-  for (decltype(max_qps) qp = 0; qp < max_qps; ++qp)
-  {
-    _user_diff[qp] = getParam<Real>("diff");
-    _user_mu[qp] = getParam<Real>("mu");
-    _user_sign[qp] = getParam<Real>("sign");
-    if (!(isCoupled("potential")))
-      _minus_e_field[qp] = RealGradient(-getParam<Real>("EField"));
-  }
 }
 
 ADReal

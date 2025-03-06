@@ -50,22 +50,6 @@ ElectronsFromIonization::ElectronsFromIonization(const InputParameters & paramet
 {
   if (!(isCoupled("potential") || parameters.isParamSetByUser("EField")))
     mooseError("You must either couple in a potential variable or set an EField.");
-
-  if (!(isCoupled("potential")))
-    _minus_e_field.resize(_fe_problem.getMaxQps(), RealGradient(-getParam<Real>("EField")));
-  if (!(getParam<bool>("use_material_props")))
-  {
-    auto max_qps = _fe_problem.getMaxQps();
-    _user_diffem.resize(max_qps);
-    _user_muem.resize(max_qps);
-    _user_alpha_iz.resize(max_qps);
-    for (decltype(max_qps) qp = 0; qp < max_qps; ++qp)
-    {
-      _user_diffem[qp] = getParam<Real>("diffem");
-      _user_muem[qp] = getParam<Real>("muem");
-      _user_alpha_iz[qp] = getParam<Real>("alpha_iz");
-    }
-  }
 }
 
 // When modifying electron or potential units, nothing should be needed to be done here provided
