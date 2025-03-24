@@ -45,16 +45,6 @@ DriftDiffusionDoNothingBC::DriftDiffusionDoNothingBC(const InputParameters & par
     _electric_field(
         getADMaterialProperty<RealVectorValue>(getParam<std::string>("field_property_name")))
 {
-  auto max_qps = _fe_problem.getMaxQps();
-  _user_diff.resize(max_qps);
-  _user_mu.resize(max_qps);
-  _user_sign.resize(max_qps);
-  for (decltype(max_qps) qp = 0; qp < max_qps; ++qp)
-  {
-    _user_diff[qp] = getParam<Real>("diff");
-    _user_mu[qp] = getParam<Real>("mu");
-    _user_sign[qp] = getParam<Real>("sign");
-  }
 }
 
 ADReal

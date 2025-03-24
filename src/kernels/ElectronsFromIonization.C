@@ -48,19 +48,6 @@ ElectronsFromIonization::ElectronsFromIonization(const InputParameters & paramet
     _em(adCoupledValue("em")),
     _grad_em(adCoupledGradient("em"))
 {
-  if (!(getParam<bool>("use_material_props")))
-  {
-    auto max_qps = _fe_problem.getMaxQps();
-    _user_diffem.resize(max_qps);
-    _user_muem.resize(max_qps);
-    _user_alpha_iz.resize(max_qps);
-    for (decltype(max_qps) qp = 0; qp < max_qps; ++qp)
-    {
-      _user_diffem[qp] = getParam<Real>("diffem");
-      _user_muem[qp] = getParam<Real>("muem");
-      _user_alpha_iz[qp] = getParam<Real>("alpha_iz");
-    }
-  }
 }
 
 // When modifying electron or potential units, nothing should be needed to be done here provided
