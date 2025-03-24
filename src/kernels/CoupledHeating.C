@@ -14,7 +14,7 @@
 #include "Function.h"
 #include <complex>
 
-registerMooseObject("MooseApp", CoupledHeating);
+registerMooseObject("ZapdosApp", CoupledHeating);
 
 InputParameters
 CoupledHeating::validParams()
