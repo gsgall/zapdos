@@ -34,7 +34,7 @@ delta = 20
     # Provide chamber mesh
     [fmg]
         type = FileMeshGenerator
-        file = Microwave_Source.msh
+        file = ../../Microwave_Source.msh
     []
 
     # Set boundaries between plasma and ceramic subdomain
@@ -76,7 +76,7 @@ delta = 20
         user_p_gas = '${P_gas}'
         user_drive_freq = '${nu}'
         user_T_gas = '${T_gas}'
-        property_tables_file = ElectronProperties/electron_moments.txt
+        property_tables_file = ../../ElectronProperties/electron_moments.txt
         block = Resonator_Pin
     []
 
@@ -89,7 +89,7 @@ delta = 20
         user_p_gas = '${P_gas}'
         user_drive_freq = '${nu}'
         user_T_gas = '${T_gas}'
-        property_tables_file = ElectronProperties/electron_moments.txt
+        property_tables_file = ../../ElectronProperties/electron_moments.txt
         block = Ceramic
     []
 
@@ -104,8 +104,8 @@ delta = 20
         pressure_dependent_electron_coeff = true
         user_T_gas = '${T_gas}'
         em = em
-        mean_en = mean
-        property_tables_file = ElectronProperties/electron_moments.txt
+        mean_en = mean_en
+        property_tables_file = ../../ElectronProperties/electron_moments.txt
         block = Plasma
     []
 
@@ -118,6 +118,7 @@ delta = 20
       type = FieldSolverMaterial
       electric_field = E_field
       solver = electromagnetic
+      block = Plasma
     []
 
     # Plasma wave coefficient
@@ -148,12 +149,12 @@ delta = 20
         type = DependentCollisionFreq
         field_property_name = field_solver_interface_property
         electrons = em
-        mean_energy = mean
+        mean_energy = mean_en
         use_mean_energy = true
         driving_frequency = '${nu}'
         delta = '${delta}'
         file_location = ''
-        property_file = ElectronProperties/collision_frequency.txt
+        property_file = ../../ElectronProperties/collision_frequency.txt
         block = Plasma
     []
 
@@ -174,21 +175,23 @@ delta = 20
 
 # Input reactions (update)
 [Reactions]
+ [Argon]
     species = 'em'
     aux_species = 'Ar'
     reaction_coefficient_format = ''
     gas_species = 'Ar'
     electron_density = 'em'
-    electron_energy = 'mean'
+    electron_energy = 'mean_en'
     include_electrons = true
-    file_location = 'ReactionRates/ReducedModel'
+    file_location = '../../ReactionRates/ReducedModel'
     use_log = true
     use_ad = true
     position_units = '${dom0Scale}'
-    block = 0
+    block = Plasma
     reactions = 'em + Ar -> em + Ar          : EEDF (ar_elastic.txt)
                  em + Ar -> em + Ar_m        : EEDF [-11.5] (ar_excitation.txt)
                  em + Ar -> em + em + Ar_I   : EEDF [-15.8] (ar_ionization.txt)' 
+  []
 []
 
 # Set boundary conditions for domain
@@ -202,9 +205,10 @@ delta = 20
     [em_BC1]
         type = SakiyamaElectronDiffusionBC
         variable = em
-        mean_en = mean
-        boundary = 'Chamber_Walls  Plasma_Side'
+        mean_en = mean_en
+        boundary = 'chamber_walls Plasma_Side'
         position_units = '${dom0Scale}'
+        electron_energy = mean_en
     []
     [em_BC2]
         type = DriftDiffusionDoNothingBC
@@ -213,7 +217,7 @@ delta = 20
         diff = 0
         sign = 0
         use_material_props = true
-        boundary = 'Chamber_Bottom'
+        boundary = 'chamber_bottom'
         position_units = '${dom0Scale}'
     []
 
@@ -224,19 +228,21 @@ delta = 20
     # Electron energy boundary conditions
     [mean_BC1]
         type = SakiyamaEnergyDiffusionBC
-        variable = mean
+        variable = mean_en
         em = em
-        boundary = 'Chamber_Walls Plasma_Side'
+        boundary = 'chamber_walls Plasma_Side'
         position_units = '${dom0Scale}'
+        electron_energy = mean_en
+        electrons = em
     []
     [mean_BC2]
         type = DriftDiffusionDoNothingBC
-        variable = mean
+        variable = mean_en
         mu = 0
         diff = 0
         sign = 0
         use_material_props = true
-        boundary = 'Chamber_Bottom'
+        boundary = 'chamber_bottom'
         position_units = '${dom0Scale}'
     []
 
@@ -270,7 +276,7 @@ delta = 20
     # Electron energy initial condition (main)
     [mean_IC]
         type = FunctionIC
-        variable = mean
+        variable = mean_en
         function = initial_mean
     []
 
@@ -348,7 +354,7 @@ delta = 20
     ###############################################################
 
     # Mean electron energy
-    [mean]
+    [mean_en]
         block = Plasma
     []
 
@@ -357,7 +363,7 @@ delta = 20
     ############################################################### 
 
     # Electric Field
-    [E_feild]
+    [E_field]
         family = LAGRANGE_VEC
         order = FIRST
         block = Plasma
@@ -374,7 +380,7 @@ delta = 20
 
     [Dummy]
         type = NullKernel
-        varible = Dummy
+        variable = Dummy
         block = 'Resonator_Pin Ceramic'
     []
 
@@ -412,14 +418,14 @@ delta = 20
     # Derivative of electron energy
     [mean_dt]
         type = ElectronTimeDerivative
-        variable = mean
+        variable = mean_en
         block = Plasma
     []
 
     # Electron energy advection
     [mean_advection]
         type = EFieldAdvection
-        variable = mean
+        variable = mean_en
         position_units = '${dom0Scale}'
         block = Plasma
     []
@@ -427,7 +433,7 @@ delta = 20
     # Electron energy diffusion
     [mean_diffusion]
         type = CoeffDiffusion
-        variable = mean
+        variable = mean_en
         position_units = '${dom0Scale}'
         block = Plasma
     []
@@ -435,7 +441,7 @@ delta = 20
     # Joule heating terms
     [mean_Q_joule]
         type = JouleHeating
-        variable = mean
+        variable = mean_en
         em = em
         position_units = '${dom0Scale}'
         block = Plasma
@@ -444,7 +450,7 @@ delta = 20
     # Microwave heating
     [mean_Q_microwave]
         type = CoupledHeating
-        variable = mean
+        variable = mean_en
         heating_term = Q_cond
     []
 
@@ -549,7 +555,7 @@ delta = 20
     [mean_aux]
         type = ProjectionAux
         variable = mean_aux
-        v = mean
+        v = mean_en
         block = Plasma
         execute_on = 'INITIAL LINEAR NONLINEAR TIMESTEP_END'
     []
@@ -559,6 +565,7 @@ delta = 20
         type = ElectronTemperature
         variable = Te
         electron_density = em
+        mean_en = mean_en
     []
 
     ###############################################################

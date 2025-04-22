@@ -1,0 +1,9 @@
+#!/bin/bash
+#SBATCH -J Tutorial1
+#SBATCH -N 1
+#SBATCH -n 16
+#SBATCH -t 12:00:00
+#PBS -p all
+
+export PYTHONPATH='$PYTHONPATH:/home/lkking3/projects/zapdos/moose/python'
+python /home/lkking3/projects/zapdos/SHINX/Pressure_Power_Sweep.py

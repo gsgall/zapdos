@@ -49,7 +49,7 @@ Source_File = 'SHINX_Microwave_Model_SRC_EM_Heating0.e'
 	  	ramp_trans_coeffs = false
   	  	user_p_gas = '${P_gas}'
 	  	user_T_gas = '${T_gas}'
-	  	property_tables_file = ElectronProperties/electron_moments.txt
+	  	property_tables_file = ../../ElectronProperties/electron_moments.txt
 	  	block = Resonator_Pin
 	[]
 
@@ -61,7 +61,7 @@ Source_File = 'SHINX_Microwave_Model_SRC_EM_Heating0.e'
 	  	ramp_trans_coeffs = false
 	  	user_p_gas = '${P_gas}'
 	  	user_T_gas = '${T_gas}'
-	  	property_tables_file = ElectronProperties/electron_moments.txt
+	  	property_tables_file = ../../ElectronProperties/electron_moments.txt
 	  	block = Ceramic
 	[]
 
@@ -73,7 +73,7 @@ Source_File = 'SHINX_Microwave_Model_SRC_EM_Heating0.e'
 		ramp_trans_coeffs = false
 		user_p_gas = '${P_gas}'
 		user_T_gas = '${T_gas}'
-		property_tables_file = ElectronProperties/electron_moments.txt
+		property_tables_file = ../../ElectronProperties/electron_moments.txt
 		block = Plasma
 	[]
 
@@ -593,7 +593,7 @@ Source_File = 'SHINX_Microwave_Model_SRC_EM_Heating0.e'
 	[]
 
 	# Log-molar electron energy
-	[mean]
+	[mean_en]
 		block = Plasma
 		initial_from_file_var = mean_aux
 		initial_from_file_timestep = LATEST

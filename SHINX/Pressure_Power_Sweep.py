@@ -14,7 +14,7 @@ Pressure = np.array([400])*u.mTorr
 Power = np.array([125])*u.W
 
 # Set auto-run settings (default to 1)
-run_sim = 0
+run_sim = 1
 
 #################################################################################
 #                           NO EDITS BELOW THIS POINT                           #
@@ -132,15 +132,15 @@ if run_sim == 1:
     
             # Create command prompt
             input_file = [f"{target_directory}/{file1.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.i"]
-            cli_args = ['-i'] + input_file
+            cli_args = ['-i'] + input_file + ['--allow-unused']
             a = copy.copy(cli_args)
 
             # Run mesh generator
             executable = mooseutils.find_moose_executable_recursive(os.getcwd())
-            out  = mooseutils.run_executable(executable,*a, mpi=14, suppress_output=False)
+            out  = mooseutils.run_executable(executable,*a, mpi=16, suppress_output=False)
 
             # Save output data
-            data = np.genfromtxt(f"{target_directory}/Data/IC/{file1.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.csv",skip_header=1,delimiter=',')
+            data = np.genfromtxt(f"{target_directory}/Data/IC/{fe1.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.csv",skip_header=1,delimiter=',')
 
 # Run transient
 if run_sim == 1:
@@ -149,12 +149,12 @@ if run_sim == 1:
     
             # Create command prompt
             input_file = [f"{target_directory}/{file4.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.i"]
-            cli_args = ['-i'] + input_file
+            cli_args = ['-i'] + input_file + ['--allow-unused']
             a = copy.copy(cli_args)
 
             # Run mesh generator
             executable = mooseutils.find_moose_executable_recursive(os.getcwd())
-            out  = mooseutils.run_executable(executable,*a, mpi=14, suppress_output=False)
+            out  = mooseutils.run_executable(executable,*a, mpi=16, suppress_output=False)
 
             # Save output data
             data = np.genfromtxt(f"{target_directory}/Data/Transient/{file4.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.csv",skip_header=1,delimiter=',')
@@ -166,12 +166,12 @@ if run_sim == 1:
     
             # Create command prompt
             input_file = [f"{target_directory}/{file5.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.i"]
-            cli_args = ['-i'] + input_file
+            cli_args = ['-i'] + input_file + ['--allow-unused']
             a = copy.copy(cli_args)
 
             # Run mesh generator
             executable = mooseutils.find_moose_executable_recursive(os.getcwd())
-            out  = mooseutils.run_executable(executable,*a, mpi=14, suppress_output=False)
+            out  = mooseutils.run_executable(executable,*a, mpi=16, suppress_output=False)
 
             # Save output data
             data = np.genfromtxt(f"{target_directory}/Data/CRM/{file5.replace('.i','')}_{Pressure.value[n]:.0f}_mTorr_{Power.value[m]:.0f}_W.csv",skip_header=1,delimiter=',')
